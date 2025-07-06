@@ -25,22 +25,22 @@ const protocolData = {
   'aave-v3': {
     name: "Aave V3",
     fee: 0.0005,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2563, "WETH": 2641, "BTC": 100500, "WBTC": 103515 }
   },
   'balancer-v3': {
     name: "Balancer V3",
     fee: 0.001,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2576, "WETH": 2653, "BTC": 101000, "WBTC": 104030 }
   },
   'uniswap-v3': {
     name: "Uniswap V3",
     fee: 0.0015,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2588, "WETH": 2666, "BTC": 101500, "WBTC": 104545 }
   },
   'bancor-v3': {
     name: "Bancor V3",
     fee: 0.0,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2601, "WETH": 2679, "BTC": 102000, "WBTC": 105060 }
   }
 };
 
