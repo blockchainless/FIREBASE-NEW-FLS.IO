@@ -14,12 +14,14 @@ export default function InformationPage() {
                 <CardHeader>
                     <CardTitle className="text-3xl text-center font-headline">Information</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow min-h-0 p-0">
-                    <ScrollArea className="h-full no-scrollbar">
-                        <div className="p-6 text-foreground/90">
-                            {/* Content will be added here later */}
-                        </div>
-                    </ScrollArea>
+                <CardContent className="flex-grow p-0 flex flex-col min-h-0">
+                    <div className="flex-grow border-2 border-primary/50 rounded-md mx-6 my-2">
+                        <ScrollArea className="h-full no-scrollbar">
+                            <div className="p-6 text-foreground/90">
+                                {/* Content will be added here later */}
+                            </div>
+                        </ScrollArea>
+                    </div>
                 </CardContent>
                 <CardFooter>
                     <Button onClick={() => router.push('/arbitrage')} className="w-full h-12 text-lg font-bold">
