@@ -47,23 +47,23 @@ const protocolData = {
 const dexData = {
   'uniswap-v3': {
     name: "Uniswap",
-    fee: 0.0065,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550, "WETH": 2630, "BTC": 100000, "WBTC": 103000 }
+    fee: 0.007,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 3978, "WETH": 4098, "BTC": 156000, "WBTC": 160680 }
   },
   'sushiswap': {
     name: "Sushiswap",
-    fee: 0.008,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2570, "WETH": 2650, "BTC": 100020, "WBTC": 103020 }
+    fee: 0.0085,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4009, "WETH": 4130, "BTC": 156031, "WBTC": 160713 }
   },
   'kyberswap': {
     name: "Kyberswap",
-    fee: 0.006,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2590, "WETH": 2670, "BTC": 100040, "WBTC": 103040 }
+    fee: 0.0065,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4040, "WETH": 4161, "BTC": 156062, "WBTC": 160744 }
   },
   'pancakeswap': {
     name: "Pancakeswap",
-    fee: 0.0075,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2610, "WETH": 2690, "BTC": 100060, "WBTC": 103060 }
+    fee: 0.008,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4072, "WETH": 4194, "BTC": 156094, "WBTC": 160776 }
   }
 };
 // --------------------------------
