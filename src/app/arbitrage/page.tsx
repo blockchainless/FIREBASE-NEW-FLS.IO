@@ -76,7 +76,6 @@ export default function ArbitragePage() {
 
   const handleInputChange = (source: 'from' | 'to' | 'gas', value: string) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
-    setLastEdited(source);
     if (source === 'from') {
         setFromAmount(controlledValue);
     } else if (source === 'to') {
@@ -84,12 +83,15 @@ export default function ArbitragePage() {
     } else {
         setGasFeeInput(controlledValue);
     }
+    setLastEdited(source);
   };
 
   const handleSelectChange = (setter, value) => {
       setter(value);
       if (fromAmount) {
           setLastEdited('from');
+      } else if (toAmount) {
+          setLastEdited('to');
       } else if (gasFeeInput) {
           setLastEdited('gas');
       } else {
@@ -101,6 +103,8 @@ export default function ArbitragePage() {
       setToCoinState(value);
       if (fromAmount) {
           setLastEdited('from');
+      } else if (toAmount) {
+        setLastEdited('to');
       } else if (gasFeeInput) {
           setLastEdited('gas');
       } else {
@@ -129,8 +133,8 @@ export default function ArbitragePage() {
 
     if (!pricesExist) {
         setEstimatedProfit('0.00');
-        if (lastEdited === 'from') setToAmount('');
-        if (lastEdited === 'to') setFromAmount('');
+        if (lastEdited === 'from' && toAmount) setToAmount('');
+        if (lastEdited === 'to' && fromAmount) setFromAmount('');
         return;
     }
     
@@ -138,7 +142,6 @@ export default function ArbitragePage() {
     const fromSwapFee = selectedFromSwap.fee;
     const toSwapFee = selectedToSwap.fee;
     
-    // --- Pure Calculation Functions ---
     const getToAmount = (from: number) => (from * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
     const getFromAmount = (to: number) => (to * priceToCoin_FromSwap) / priceFromCoin_FromSwap;
     
@@ -155,54 +158,37 @@ export default function ArbitragePage() {
         return grossProfitUSD - lenderFeeUSD;
     };
     
-    const getProfit = (from: number, gas: number) => {
+    const getNetProfit = (from: number, gas: number) => {
         if (!from || from <= 0) return gas > 0 ? -gas : 0;
         const grossProfit = getGrossProfitUSD(from);
         return grossProfit - (gas || 0);
-    };
-
-    const getBreakEvenFrom = (gas: number) => {
-        const rate = (priceFromCoin_FromSwap / priceToCoin_FromSwap) * (1 - fromSwapFee) * priceToCoin_ToSwap / priceFromCoin_ToSwap * (1 - toSwapFee);
-        const profitFactor = priceFromCoin_Lender * ((rate - 1) - lenderFeeRate);
-        if (profitFactor <= 0 || !gas || gas < 0) return 0;
-        return gas / profitFactor;
     };
 
     const fromNum = parseFloat(fromAmount) || 0;
     const toNum = parseFloat(toAmount) || 0;
     const gasNum = parseFloat(gasFeeInput) || 0;
 
-    if (!lastEdited) {
-        setEstimatedProfit(getProfit(fromNum, gasNum).toFixed(2));
-        return;
-    }
+    let currentFrom = fromNum;
 
     if (lastEdited === 'from') {
         const newTo = fromNum > 0 ? getToAmount(fromNum) : 0;
-        const grossProfit = fromNum > 0 ? getGrossProfitUSD(fromNum) : 0;
         setToAmount(newTo > 0 ? newTo.toFixed(6) : '');
-        setGasFeeInput(grossProfit > 0 ? grossProfit.toFixed(2) : '');
-        setEstimatedProfit('0.00');
+        currentFrom = fromNum;
     } else if (lastEdited === 'to') {
         const newFrom = toNum > 0 ? getFromAmount(toNum) : 0;
-        const grossProfit = newFrom > 0 ? getGrossProfitUSD(newFrom) : 0;
         setFromAmount(newFrom > 0 ? newFrom.toFixed(2) : '');
-        setGasFeeInput(grossProfit > 0 ? grossProfit.toFixed(2) : '');
-        setEstimatedProfit('0.00');
+        currentFrom = newFrom;
     } else if (lastEdited === 'gas') {
-        const breakEvenFrom = getBreakEvenFrom(gasNum);
-        if (breakEvenFrom > 0) {
-            const breakEvenTo = getToAmount(breakEvenFrom);
-            setFromAmount(breakEvenFrom.toFixed(2));
-            setToAmount(breakEvenTo.toFixed(6));
-            setEstimatedProfit('0.00');
-        } else {
-            setFromAmount('');
-            setToAmount('');
-            setEstimatedProfit(getProfit(0, gasNum).toFixed(2));
-        }
+        currentFrom = fromNum;
     }
-  }, [lender, fromSwap, toSwap, fromCoin, toCoin, fromAmount, toAmount, gasFeeInput, lastEdited, network]);
+
+    if (fromCoin && toCoin && (fromAmount || toAmount)) {
+        const netProfit = getNetProfit(currentFrom, gasNum);
+        setEstimatedProfit(netProfit.toFixed(2));
+    } else {
+        setEstimatedProfit(getNetProfit(0, gasNum).toFixed(2));
+    }
+  }, [lender, fromSwap, toSwap, fromCoin, toCoin, fromAmount, toAmount, gasFeeInput, lastEdited]);
 
   const resetForm = () => {
       setLastEdited(null);
