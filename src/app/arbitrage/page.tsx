@@ -53,7 +53,7 @@ export default function ArbitragePage() {
   // --- MOCK DATA FOR SIMULATION ---
   const coinPrices = {
     'USDT': 1, 'USDC': 1, 'ETH': 2500, 'WETH': 2500, 'WBTC': 50000,
-    'BTC': 50000, 'DOX': 0.1, 'LINX': 0.5, 'MAGIC': 2,
+    'BTC': 50000,
   };
 
   const dexPriceFactors = {
@@ -121,7 +121,7 @@ export default function ArbitragePage() {
     const netProfit = grossProfit - currentLenderFee - currentGasFee;
     setEstimatedProfit(netProfit.toFixed(2));
 
-  }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput]);
+  }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput, coinPrices, dexPriceFactors, dexFees, lenderFees]);
 
   useEffect(() => {
     calculateFeesAndProfit();
@@ -185,7 +185,7 @@ export default function ArbitragePage() {
         setFromAmount('');
         setToAmount('');
       }
-    } else if (gasFee === 0) {
+    } else if (controlledValue === '' || gasFee === 0) {
       setFromAmount('');
       setToAmount('');
     }
@@ -241,8 +241,6 @@ export default function ArbitragePage() {
       { value: 'USDT', label: 'USDT' }, { value: 'USDC', label: 'USDC' },
       { value: 'ETH', label: 'ETH' }, { value: 'WETH', label: 'WETH' },
       { value: 'WBTC', label: 'WBTC' }, { value: 'BTC', label: 'BTC' },
-      { value: 'DOX', label: 'DOX' }, { value: 'LINX', label: 'LINX' },
-      { value: 'MAGIC', label: 'MAGIC' },
   ];
 
   return (
@@ -256,11 +254,11 @@ export default function ArbitragePage() {
           <ArbitrageSelect value={lender} onValueChange={setLender} options={lenderOptions} placeholder="Select Borrow Lender" />
           <ArbitrageSelect value={fromSwap} onValueChange={setFromSwap} options={fromSwapOptions} placeholder="Arbitrage From Swap" />
           <ArbitrageSelect value={toSwap} onValueChange={setToSwap} options={toSwapOptions} placeholder="Arbitrage To Swap" />
-          <ArbitrageSelect value={fromCoin} onValueChange={setFromCoin} options={coinOptions} placeholder="Arbitrage Coin From" />
-          <ArbitrageSelect value={toCoin} onValueChange={setToCoin} options={coinOptions} placeholder="Arbitrage Coin To" />
+          <ArbitrageSelect value={fromCoin} onValueChange={(value) => { setFromCoin(value); handleAmountChange(fromAmount, 'from'); }} options={coinOptions} placeholder="Arbitrage Coin From" />
+          <ArbitrageSelect value={toCoin} onValueChange={(value) => { setToCoin(value); handleAmountChange(fromAmount, 'from'); }} options={coinOptions} placeholder="Arbitrage Coin To" />
 
           <Input type="text" value={fromAmount} onChange={(e) => handleAmountChange(e.target.value, 'from')} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
-          <Input type="text" value={toAmount} onChange={(e) => handleAmountChange(e.target.value, 'to')} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
+          <Input type="text" value={toAmount} onChange={(e) => handleAmountChange(e.target.value, 'to')} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" readOnly />
           
           {showGasFeeInput ? (
              <Input 
@@ -271,10 +269,10 @@ export default function ArbitragePage() {
                 className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
              />
           ) : (
-             <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue">Gas Fee: ${gasFeeDisplay}</Label>
+             <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue leading-6">Gas Fee: ${gasFeeDisplay}</Label>
           )}
 
-          <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue">Estimated Arbitrage Profit: ${estimatedProfit}</Label>
+          <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue leading-6">Estimated Arbitrage Profit: ${estimatedProfit}</Label>
           
           <Button onClick={handleExecute} className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red">
             {executeClicked ? 'Reset' : 'Execute'}
