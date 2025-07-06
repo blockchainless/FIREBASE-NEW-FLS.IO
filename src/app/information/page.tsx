@@ -14,7 +14,7 @@ export default function InformationPage() {
                 <CardHeader>
                     <CardTitle className="text-3xl text-center font-headline">Information</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow overflow-hidden p-0">
+                <CardContent className="flex-grow min-h-0 p-0">
                     <ScrollArea className="h-full no-scrollbar">
                         <div className="p-6 pt-0 text-foreground/90">
                             <div className="space-y-4">
