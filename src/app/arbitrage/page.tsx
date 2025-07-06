@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -96,14 +97,27 @@ export default function ArbitragePage() {
   const handleGasFeeInputChange = (value) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
     setGasFeeInput(controlledValue);
+    
+    const gasFee = parseFloat(controlledValue) || 0;
+    // If the gas fee input is visible, we are in "budget-first" mode.
+    if (showGasFeeInput) {
+        if (gasFee > 0) {
+            const arbitrageAmount = Math.round(gasFee * 100);
+            setFromAmount(String(arbitrageAmount));
+            setToAmount(String(arbitrageAmount));
+        } else {
+            // If the gas input is cleared, clear the calculated amounts
+            setFromAmount('');
+            setToAmount('');
+        }
+    }
   };
 
   const handleGasFeeBlur = () => {
     const gasFee = parseFloat(gasFeeInput) || 0;
-    if (gasFee > 0 && !fromAmount && !toAmount) {
-      const arbitrageAmount = Math.round(gasFee * 100);
-      setFromAmount(String(arbitrageAmount));
-      setToAmount(String(arbitrageAmount));
+    // If the user has entered a gas fee, and from/to amounts have been calculated,
+    // then hide the input and show the label view.
+    if (gasFee > 0 && fromAmount && toAmount) {
       setShowGasFeeInput(false);
     }
   };
