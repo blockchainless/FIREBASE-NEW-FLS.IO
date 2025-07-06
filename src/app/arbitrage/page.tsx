@@ -7,7 +7,7 @@ import {
 
 export default function ArbitragePage() {
   return (
-    <div className="w-full max-w-lg mx-auto animate-fade-in">
+    <div className="w-full max-w-sm mx-auto animate-fade-in">
       <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline">DEMO</CardTitle>

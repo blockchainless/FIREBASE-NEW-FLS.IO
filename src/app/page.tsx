@@ -9,7 +9,7 @@ export default function WelcomePage() {
         <h1 className="text-5xl md:text-6xl font-bold font-headline">
           Demo
         </h1>
-        <p className="text-muted-foreground max-w-md mx-auto">
+        <p className="text-muted-foreground max-w-sm mx-auto">
           Select restore if you had wallet before to access it. Select create wallet if you need to open new wallet to use this dapp.
         </p>
       </div>
