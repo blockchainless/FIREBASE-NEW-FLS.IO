@@ -118,9 +118,7 @@ export default function ArbitragePage() {
   const [toAmount, setToAmount] = useState(initial_state.toAmount);
   const [gasFeeInput, setGasFeeInput] = useState(initial_state.gasFeeInput);
   
-  const [gasFeeDisplay, setGasFeeDisplay] = useState('0.00');
   const [estimatedProfit, setEstimatedProfit] = useState('0.00');
-  const [showGasFeeInput, setShowGasFeeInput] = useState(true);
   const [executeClicked, setExecuteClicked] = useState(false);
 
   const calculateFeesAndProfit = useCallback(() => {
@@ -163,23 +161,12 @@ export default function ArbitragePage() {
     const principalValueUSD = principal * priceFromCoin_Lender;
     const lenderFeeUSD = principalValueUSD * lenderFeeRate;
 
-    let currentGasFee = 0;
-    if (showGasFeeInput) {
-      currentGasFee = parseFloat(gasFeeInput) || 0;
-    } else {
-      let networkFee = 0;
-      if (network === 'ethereum') networkFee = 50;
-      else if (['arbitrum', 'optimism'].includes(network)) networkFee = 5;
-      else if (network === 'polygon') networkFee = 1;
-      else networkFee = 10;
-      currentGasFee = networkFee;
-      setGasFeeDisplay(currentGasFee.toFixed(2));
-    }
+    const currentGasFee = parseFloat(gasFeeInput) || 0;
     
     const netProfit = grossProfitUSD - lenderFeeUSD - currentGasFee;
     setEstimatedProfit(netProfit.toFixed(2));
 
-  }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput]);
+  }, [fromAmount, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput]);
 
   useEffect(() => {
     calculateFeesAndProfit();
@@ -197,13 +184,6 @@ export default function ArbitragePage() {
       setToAmount(toAmountValue.toFixed(6));
     } else {
       setToAmount('');
-    }
-
-    if (controlledValue) {
-      setShowGasFeeInput(false);
-    } else {
-      setShowGasFeeInput(true);
-      setGasFeeInput('');
     }
   };
 
@@ -244,7 +224,6 @@ export default function ArbitragePage() {
             
             const toAmountValue = (requiredPrincipalInFromCoin * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
             setToAmount(toAmountValue.toFixed(6));
-            setShowGasFeeInput(false);
         } else {
             setFromAmount('');
             setToAmount('');
@@ -265,7 +244,6 @@ export default function ArbitragePage() {
       setFromAmount(initial_state.fromAmount);
       setToAmount(initial_state.toAmount);
       setGasFeeInput(initial_state.gasFeeInput);
-      setShowGasFeeInput(true);
       setExecuteClicked(false);
   }
 
@@ -314,22 +292,18 @@ export default function ArbitragePage() {
           <Input type="text" value={fromAmount} onChange={(e) => handleAmountChange(e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           <Input type="text" value={toAmount} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" readOnly />
           
-          {showGasFeeInput ? (
-             <Input 
-                type="text" 
-                value={gasFeeInput} 
-                onChange={handleGasFeeInputChange}
-                placeholder="Enter gas fee (USD)" 
-                className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
-             />
-          ) : (
-             <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue leading-6">Gas Fee: ${gasFeeDisplay}</Label>
-          )}
+           <Input 
+              type="text" 
+              value={gasFeeInput} 
+              onChange={handleGasFeeInputChange}
+              placeholder="Enter gas fee (USD)" 
+              className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
+           />
 
           <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue leading-6">Estimated Arbitrage Profit: ${estimatedProfit}</Label>
           
           <Button onClick={handleExecute} className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red">
-            {executeClicked ? 'Reset' : 'Reset'}
+            {executeClicked ? 'Reset' : 'Execute'}
           </Button>
 
           <Button onClick={() => router.push('/information')} variant="outline" className="w-full h-12 text-lg">
