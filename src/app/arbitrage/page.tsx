@@ -191,8 +191,8 @@ export default function ArbitragePage() {
             {executeClicked ? 'Reset' : 'Execute'}
           </Button>
 
-          <Button onClick={() => router.push('/help')} variant="outline" className="w-full h-12 text-lg">
-            Help Page
+          <Button onClick={() => router.push('/information')} variant="outline" className="w-full h-12 text-lg">
+            Information
           </Button>
 
         </CardContent>
