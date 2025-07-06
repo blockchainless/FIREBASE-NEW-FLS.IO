@@ -20,7 +20,7 @@ const ArbitrageSelect = ({ value, onValueChange, options, placeholder }) => (
   </Select>
 );
 
-// --- MOCK DATA FOR SIMULATION ---
+// --- LENDER DATA ---
 const protocolData = {
   'aave-v3': {
     name: "Aave V3",
@@ -44,6 +44,7 @@ const protocolData = {
   }
 };
 
+// --- DEX DATA ---
 const dexData = {
   'uniswap-v3': {
     name: "Uniswap",
