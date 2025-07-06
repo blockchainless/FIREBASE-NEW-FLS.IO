@@ -14,7 +14,7 @@ export default function WelcomePage() {
         </p>
       </div>
       <div className="w-full max-w-sm space-y-6 animate-fade-in-up">
-        <Link href="/setup?action=restore" passHref>
+        <Link href="/set-password?action=restore" passHref>
           <Button
             variant="outline"
             size="lg"
@@ -24,7 +24,7 @@ export default function WelcomePage() {
             Restore Wallet
           </Button>
         </Link>
-        <Link href="/setup?action=create" passHref>
+        <Link href="/set-password?action=create" passHref>
           <Button
             variant="outline"
             size="lg"

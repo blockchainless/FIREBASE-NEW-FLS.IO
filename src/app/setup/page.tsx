@@ -33,8 +33,8 @@ function SetupPageContent() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd validate the seed phrase and pass it to the next step
-    router.push('/set-password');
+    // In a real app, you'd validate the seed phrase
+    router.push('/arbitrage');
   };
 
   if (action === 'create') {
@@ -62,9 +62,9 @@ function SetupPageContent() {
             >
               I've saved my phrase, Continue
             </Button>
-            <Link href="/" passHref className="w-full">
-              <Button variant="outline" className="w-full h-12">Back</Button>
-            </Link>
+            <Button type="button" variant="outline" onClick={() => router.back()} className="w-full h-12">
+              Back
+            </Button>
           </div>
         </form>
       </AuthLayout>
@@ -104,9 +104,9 @@ function SetupPageContent() {
             >
               Continue
             </Button>
-            <Link href="/" passHref className="w-full">
-              <Button variant="outline" className="w-full h-12">Back</Button>
-            </Link>
+            <Button type="button" variant="outline" onClick={() => router.back()} className="w-full h-12">
+              Back
+            </Button>
           </div>
         </form>
       </AuthLayout>
