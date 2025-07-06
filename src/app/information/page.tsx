@@ -16,7 +16,7 @@ export default function InformationPage() {
                 </CardHeader>
                 <CardContent className="flex-grow min-h-0 p-0">
                     <ScrollArea className="h-full no-scrollbar">
-                        <div className="p-6 pt-0 text-foreground/90">
+                        <div className="p-6 text-foreground/90">
                             <div className="space-y-4">
                                 <div>
                                     <p className="font-bold mt-4">What is FlashLoanStudio.io?</p>
