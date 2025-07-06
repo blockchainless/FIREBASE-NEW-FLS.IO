@@ -44,8 +44,8 @@ const protocolData = {
   }
 };
 
-// --- DEX DATA ---
-const dexData = {
+// --- DEX DATA (Buy Low) ---
+const fromDexData = {
   'uniswap-v3': {
     name: "Uniswap",
     fee: 0.007,
@@ -66,6 +66,31 @@ const dexData = {
     fee: 0.008,
     tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4072, "WETH": 4194, "BTC": 156094, "WBTC": 160776 }
   }
+};
+
+// --- DEX DATA (Sell High) ---
+// Prices are slightly higher to simulate arbitrage opportunity
+const toDexData = {
+    'uniswap-v3': {
+      name: "Uniswap",
+      fee: 0.007,
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4017, "WETH": 4138, "BTC": 157560, "WBTC": 162286 }
+    },
+    'sushiswap': {
+      name: "Sushiswap",
+      fee: 0.0085,
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4049, "WETH": 4171, "BTC": 157591, "WBTC": 162320 }
+    },
+    'kyberswap': {
+      name: "Kyberswap",
+      fee: 0.0065,
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4080, "WETH": 4202, "BTC": 157622, "WBTC": 162351 }
+    },
+    'pancakeswap': {
+      name: "Pancakeswap",
+      fee: 0.008,
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4112, "WETH": 4235, "BTC": 157654, "WBTC": 162383 }
+    }
 };
 // --------------------------------
 
@@ -102,8 +127,8 @@ export default function ArbitragePage() {
   const calculateFeesAndProfit = useCallback(() => {
     const principal = parseFloat(fromAmount);
     const selectedLender = protocolData[lender];
-    const selectedFromSwap = dexData[fromSwap];
-    const selectedToSwap = dexData[toSwap];
+    const selectedFromSwap = fromDexData[fromSwap];
+    const selectedToSwap = toDexData[toSwap];
 
     if (!principal || !fromCoin || !toCoin || !selectedLender || !selectedFromSwap || !selectedToSwap) {
       setEstimatedProfit('0.00');
@@ -166,7 +191,7 @@ export default function ArbitragePage() {
     setFromAmount(controlledValue);
     
     const amount = parseFloat(controlledValue) || 0;
-    const fromDex = dexData[fromSwap];
+    const fromDex = fromDexData[fromSwap];
 
     if (amount > 0 && fromCoin && toCoin && fromDex?.tokens[fromCoin] && fromDex?.tokens[toCoin]) {
       const toAmountValue = (amount * fromDex.tokens[fromCoin]) / fromDex.tokens[toCoin];
@@ -190,8 +215,8 @@ export default function ArbitragePage() {
     
     const gasFee = parseFloat(controlledValue) || 0;
     const selectedLender = protocolData[lender];
-    const selectedFromSwap = dexData[fromSwap];
-    const selectedToSwap = dexData[toSwap];
+    const selectedFromSwap = fromDexData[fromSwap];
+    const selectedToSwap = toDexData[toSwap];
 
     if (gasFee > 0 && fromCoin && toCoin && selectedLender && selectedFromSwap && selectedToSwap) {
         const priceFromCoin_Lender = selectedLender.tokens[fromCoin];
@@ -261,16 +286,10 @@ export default function ArbitragePage() {
       { value: 'fantom', label: 'Fantom' }, { value: 'cronos', label: 'Cronos' },
       { value: 'base', label: 'Base' }, { value: 'solana', label: 'Solana' },
   ];
-  const lenderOptions = [
-      { value: 'aave-v3', label: 'Aave V3' },
-      { value: 'uniswap-v3', label: 'Uniswap V3' },
-      { value: 'balancer-v3', label: 'Balancer V3' },
-      { value: 'bancor-v3', label: 'Bancor V3' },
-  ];
-  const dexOptions = [
-      { value: 'uniswap-v3', label: 'Uniswap' }, { value: 'sushiswap', label: 'Sushiswap' },
-      { value: 'kyberswap', label: 'Kyberswap' }, { value: 'pancakeswap', label: 'Pancakeswap' },
-  ];
+  const lenderOptions = Object.entries(protocolData).map(([key, { name }]) => ({ value: key, label: name }));
+
+  const dexOptions = Object.entries(fromDexData).map(([key, { name }]) => ({ value: key, label: name }));
+
   const coinOptions = [
       { value: 'USDT', label: 'USDT' }, { value: 'USDC', label: 'USDC' },
       { value: 'ETH', label: 'ETH' }, { value: 'WETH', label: 'WETH' },
@@ -330,3 +349,5 @@ export default function ArbitragePage() {
     </div>
   );
 }
+
+    
