@@ -162,18 +162,8 @@ export default function ArbitragePage() {
     let toNum = parseFloat(toAmount) || 0;
     let gasNum = parseFloat(gasFeeInput) || 0;
 
-    if (lastEdited === 'from') {
-        const newTo = getToAmount(fromNum);
-        if (newTo.toFixed(6) !== toAmount) {
-            setToAmount(newTo > 0 ? newTo.toFixed(6) : '');
-        }
-    } else if (lastEdited === 'to') {
-        const newFrom = getFromAmount(toNum);
-         if (newFrom.toFixed(2) !== fromAmount) {
-            setFromAmount(newFrom > 0 ? newFrom.toFixed(2) : '');
-        }
-        fromNum = newFrom;
-    } else if (lastEdited === 'gas') {
+    if (lastEdited === 'gas') {
+      if (gasNum > 0) {
         const requiredFrom = getFromAmountForGas(gasNum);
         if (requiredFrom > 0) {
             const newTo = getToAmount(requiredFrom);
@@ -184,6 +174,18 @@ export default function ArbitragePage() {
              // If trade isn't profitable for the gas fee, we just show the loss
              // on the current fromNum without changing amounts.
         }
+      }
+    } else if (lastEdited === 'from') {
+        const newTo = getToAmount(fromNum);
+        if (newTo.toFixed(6) !== toAmount) {
+            setToAmount(newTo > 0 ? newTo.toFixed(6) : '');
+        }
+    } else if (lastEdited === 'to') {
+        const newFrom = getFromAmount(toNum);
+         if (newFrom.toFixed(2) !== fromAmount) {
+            setFromAmount(newFrom > 0 ? newFrom.toFixed(2) : '');
+        }
+        fromNum = newFrom;
     }
 
     const grossProfit = getGrossProfitUSD(fromNum);
@@ -216,17 +218,6 @@ export default function ArbitragePage() {
     }
   };
   
-  const setToCoin = (value: string) => {
-    setToCoinState(value);
-    if (gasFeeInput && !fromAmount && !toAmount) {
-      setLastEdited('gas');
-    } else if (toAmount && !fromAmount) {
-      setLastEdited('to');
-    } else {
-      setLastEdited('from');
-    }
-  }
-
   const networkOptions = [
       { value: 'ethereum', label: 'Ethereum' }, { value: 'arbitrum', label: 'Arbitrum' },
       { value: 'polygon', label: 'Polygon' }, { value: 'optimism', label: 'Optimism' },
@@ -255,7 +246,7 @@ export default function ArbitragePage() {
           <ArbitrageSelect value={fromSwap} onValueChange={(v) => handleSelectChange(setFromSwap, v)} options={fromDexOptions} placeholder="Arbitrage From Swap" />
           <ArbitrageSelect value={toSwap} onValueChange={(v) => handleSelectChange(setToSwap, v)} options={toDexOptions} placeholder="Arbitrage To Swap" />
           <ArbitrageSelect value={fromCoin} onValueChange={(v) => handleSelectChange(setFromCoin, v)} options={coinOptions} placeholder="Arbitrage Coin From" />
-          <ArbitrageSelect value={toCoin} onValueChange={setToCoin} options={coinOptions} placeholder="Arbitrage Coin To" />
+          <ArbitrageSelect value={toCoin} onValueChange={(v) => handleSelectChange(setToCoinState, v)} options={coinOptions} placeholder="Arbitrage Coin To" />
 
           <Input type="text" value={fromAmount} onChange={(e) => handleInputChange(setFromAmount, 'from', e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           <Input type="text" value={toAmount} onChange={(e) => handleInputChange(setToAmount, 'to', e.target.value)} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
