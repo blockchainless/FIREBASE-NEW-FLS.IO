@@ -199,7 +199,7 @@ export default function ArbitragePage() {
         <CardFooter className="flex flex-col items-center justify-center pt-2 space-y-2">
            <Button
             variant="ghost"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/login')}
             className="text-xs text-muted-foreground hover:bg-transparent hover:text-foreground p-0 h-auto"
           >
             All right reserved
