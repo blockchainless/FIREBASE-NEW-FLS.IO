@@ -98,10 +98,7 @@ export default function ArbitragePage() {
     setGasFeeInput(controlledValue);
     const gasFee = parseFloat(controlledValue) || 0;
     if (gasFee > 0 && !fromAmount && !toAmount) {
-      let arbitrageAmount = 0;
-      if (gasFee <= 10) arbitrageAmount = 500;
-      else if (gasFee <= 50) arbitrageAmount = 2000;
-      else arbitrageAmount = 5000;
+      const arbitrageAmount = Math.round(gasFee * 100);
       setFromAmount(String(arbitrageAmount));
       setToAmount(String(arbitrageAmount));
       setShowGasFeeInput(false);
