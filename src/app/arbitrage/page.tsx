@@ -120,18 +120,14 @@ export default function ArbitragePage() {
   
   const [estimatedProfit, setEstimatedProfit] = useState('0.00');
   const [executeClicked, setExecuteClicked] = useState(false);
+  const [lastEdited, setLastEdited] = useState<'from' | 'to' | 'gas' | null>(null);
 
-  const handleRecalculate = useCallback((source: 'from' | 'to' | 'gas', value: string) => {
-    const controlledValue = value.replace(/[^0-9.]/g, '');
-
+  const calculateAll = useCallback(() => {
     const selectedLender = protocolData[lender];
     const selectedFromSwap = fromDexData[fromSwap];
     const selectedToSwap = toDexData[toSwap];
 
     if (!fromCoin || !toCoin || !selectedLender || !selectedFromSwap || !selectedToSwap) {
-      if (source === 'from') setFromAmount(controlledValue);
-      if (source === 'to') setToAmount(controlledValue);
-      if (source === 'gas') setGasFeeInput(controlledValue);
       return;
     }
 
@@ -145,113 +141,89 @@ export default function ArbitragePage() {
     const toSwapFee = selectedToSwap.fee;
 
     if (!priceFromCoin_Lender || !priceFromCoin_FromSwap || !priceToCoin_FromSwap || !priceFromCoin_ToSwap || !priceToCoin_ToSwap) {
-      setFromAmount('');
-      setToAmount('');
-      setGasFeeInput('');
-      setEstimatedProfit('0.00');
-      return;
+        setEstimatedProfit('0.00');
+        return;
     }
 
-    if (source === 'from') {
-      setFromAmount(controlledValue);
-      const principal = parseFloat(controlledValue);
-      if (!principal || principal <= 0) {
-        setToAmount('');
-        setGasFeeInput('');
-        setEstimatedProfit('0.00');
-        return;
-      }
-      const amountOfToCoin = (principal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
-      const amountOfToCoinAfterFee = amountOfToCoin * (1 - fromSwapFee);
-      const endValueUSD = amountOfToCoinAfterFee * priceToCoin_ToSwap;
-      const endAmountOfFromCoin = endValueUSD / priceFromCoin_ToSwap;
-      const endAmountOfFromCoinAfterFee = endAmountOfFromCoin * (1 - toSwapFee);
-      const grossProfitInFromCoin = endAmountOfFromCoinAfterFee - principal;
-      const grossProfitUSD = grossProfitInFromCoin * priceFromCoin_Lender;
-      const principalValueUSD = principal * priceFromCoin_Lender;
-      const lenderFeeUSD = principalValueUSD * lenderFeeRate;
-      const breakevenGas = grossProfitUSD - lenderFeeUSD;
-      
-      setToAmount(amountOfToCoin.toFixed(6));
-      setGasFeeInput(breakevenGas > 0 ? breakevenGas.toFixed(2) : '0.00');
-      
-      const finalGasFee = breakevenGas > 0 ? breakevenGas : 0;
-      const netProfit = grossProfitUSD - lenderFeeUSD - finalGasFee;
-      setEstimatedProfit(netProfit.toFixed(2));
+    let principal = parseFloat(fromAmount);
+    let received = parseFloat(toAmount);
+    let gas = parseFloat(gasFeeInput);
 
-    } else if (source === 'to') {
-      setToAmount(controlledValue);
-      const receivedAmount = parseFloat(controlledValue);
-      if (!receivedAmount || receivedAmount <= 0) {
-        setFromAmount('');
-        setGasFeeInput('');
-        setEstimatedProfit('0.00');
-        return;
-      }
-      const principal = (receivedAmount * priceToCoin_FromSwap) / priceFromCoin_FromSwap;
-      const amountOfToCoinAfterFee = receivedAmount * (1 - fromSwapFee);
-      const endValueUSD = amountOfToCoinAfterFee * priceToCoin_ToSwap;
-      const endAmountOfFromCoin = endValueUSD / priceFromCoin_ToSwap;
-      const endAmountOfFromCoinAfterFee = endAmountOfFromCoin * (1 - toSwapFee);
-      const grossProfitInFromCoin = endAmountOfFromCoinAfterFee - principal;
-      const grossProfitUSD = grossProfitInFromCoin * priceFromCoin_Lender;
-      const principalValueUSD = principal * priceFromCoin_Lender;
-      const lenderFeeUSD = principalValueUSD * lenderFeeRate;
-      const breakevenGas = grossProfitUSD - lenderFeeUSD;
-      
-      setFromAmount(principal.toFixed(2));
-      setGasFeeInput(breakevenGas > 0 ? breakevenGas.toFixed(2) : '0.00');
+    // If nothing has been edited, don't calculate
+    if (!lastEdited) return;
 
-      const finalGasFee = breakevenGas > 0 ? breakevenGas : 0;
-      const netProfit = grossProfitUSD - lenderFeeUSD - finalGasFee;
-      setEstimatedProfit(netProfit.toFixed(2));
-
-    } else if (source === 'gas') {
-      setGasFeeInput(controlledValue);
-      const gasFee = parseFloat(controlledValue);
-      if (!(gasFee >= 0)) {
-        if (controlledValue === '') {
-          setFromAmount('');
-          setToAmount('');
+    // Recalculate dependent values based on the source
+    if (lastEdited === 'from') {
+        if (principal > 0) {
+            const calculatedTo = (principal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
+            if (parseFloat(toAmount).toFixed(6) !== calculatedTo.toFixed(6)) {
+              setToAmount(calculatedTo.toFixed(6));
+            }
+        } else {
+            setToAmount('');
+            setEstimatedProfit('0.00');
+            return;
         }
-        setEstimatedProfit('0.00');
-        return;
-      }
-      const grossProfitRateInFromCoin = ((priceFromCoin_FromSwap / priceToCoin_FromSwap) * (priceToCoin_ToSwap / priceFromCoin_ToSwap) * (1 - fromSwapFee) * (1 - toSwapFee)) - 1;
-      const effectiveProfitRate = grossProfitRateInFromCoin - lenderFeeRate;
+    } else if (lastEdited === 'to') {
+        if (received > 0) {
+            const calculatedFrom = (received * priceToCoin_FromSwap) / priceFromCoin_FromSwap;
+            if (parseFloat(fromAmount).toFixed(2) !== calculatedFrom.toFixed(2)) {
+                setFromAmount(calculatedFrom.toFixed(2));
+            }
+            principal = calculatedFrom; // use the new principal for profit calc
+        } else {
+            setFromAmount('');
+            setEstimatedProfit('0.00');
+            return;
+        }
+    } else if (lastEdited === 'gas') {
+        if (!(principal > 0)) {
+           setEstimatedProfit('0.00');
+           return;
+        }
+    }
+    
+    // --- Profit Calculation ---
+    const finalPrincipal = principal;
+    const finalGas = isNaN(gas) ? 0 : gas;
 
-      if (effectiveProfitRate > 0) {
-        const requiredPrincipal = (gasFee / priceFromCoin_Lender) / effectiveProfitRate;
-        const toAmountValue = (requiredPrincipal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
-        
-        setFromAmount(requiredPrincipal.toFixed(2));
-        setToAmount(toAmountValue.toFixed(6));
-
-        const amountOfToCoinAfterFee = toAmountValue * (1 - fromSwapFee);
+    if (finalPrincipal > 0) {
+        const amountOfToCoin = (finalPrincipal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
+        const amountOfToCoinAfterFee = amountOfToCoin * (1 - fromSwapFee);
         const endValueUSD = amountOfToCoinAfterFee * priceToCoin_ToSwap;
         const endAmountOfFromCoin = endValueUSD / priceFromCoin_ToSwap;
         const endAmountOfFromCoinAfterFee = endAmountOfFromCoin * (1 - toSwapFee);
-        const grossProfitInFromCoin = endAmountOfFromCoinAfterFee - requiredPrincipal;
+        const grossProfitInFromCoin = endAmountOfFromCoinAfterFee - finalPrincipal;
         const grossProfitUSD = grossProfitInFromCoin * priceFromCoin_Lender;
-        const principalValueUSD = requiredPrincipal * priceFromCoin_Lender;
+        const principalValueUSD = finalPrincipal * priceFromCoin_Lender;
         const lenderFeeUSD = principalValueUSD * lenderFeeRate;
-        const netProfit = grossProfitUSD - lenderFeeUSD - gasFee;
-        setEstimatedProfit(netProfit.toFixed(2));
-      } else {
-        setFromAmount('');
-        setToAmount('');
+        const netProfit = grossProfitUSD - lenderFeeUSD - finalGas;
+        
+        if(estimatedProfit !== netProfit.toFixed(2)){
+            setEstimatedProfit(netProfit.toFixed(2));
+        }
+    } else {
         setEstimatedProfit('0.00');
-      }
     }
-  }, [fromCoin, toCoin, lender, fromSwap, toSwap]);
-  
-  useEffect(() => {
-    if (fromAmount) {
-      handleRecalculate('from', fromAmount);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [network, lender, fromSwap, toSwap, fromCoin, toCoin]);
 
+  }, [lender, fromSwap, toSwap, fromCoin, toCoin, fromAmount, toAmount, gasFeeInput, lastEdited, estimatedProfit]);
+
+  useEffect(() => {
+    calculateAll();
+  }, [calculateAll]);
+
+
+  const handleInputChange = (source: 'from' | 'to' | 'gas', value: string) => {
+    const controlledValue = value.replace(/[^0-9.]/g, '');
+    setLastEdited(source);
+    if (source === 'from') {
+        setFromAmount(controlledValue);
+    } else if (source === 'to') {
+        setToAmount(controlledValue);
+    } else {
+        setGasFeeInput(controlledValue);
+    }
+  };
 
   const resetForm = () => {
       setNetwork(initial_state.network);
@@ -265,6 +237,7 @@ export default function ArbitragePage() {
       setGasFeeInput(initial_state.gasFeeInput);
       setEstimatedProfit('0.00');
       setExecuteClicked(false);
+      setLastEdited(null);
   }
 
   const handleExecute = () => {
@@ -308,13 +281,13 @@ export default function ArbitragePage() {
           <ArbitrageSelect value={fromCoin} onValueChange={setFromCoin} options={coinOptions} placeholder="Arbitrage Coin From" />
           <ArbitrageSelect value={toCoin} onValueChange={setToCoinState} options={coinOptions} placeholder="Arbitrage Coin To" />
 
-          <Input type="text" value={fromAmount} onChange={(e) => handleRecalculate('from', e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
-          <Input type="text" value={toAmount} onChange={(e) => handleRecalculate('to', e.target.value)} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
+          <Input type="text" value={fromAmount} onChange={(e) => handleInputChange('from', e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
+          <Input type="text" value={toAmount} onChange={(e) => handleInputChange('to', e.target.value)} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           
            <Input 
               type="text" 
               value={gasFeeInput} 
-              onChange={(e) => handleRecalculate('gas', e.target.value)}
+              onChange={(e) => handleInputChange('gas', e.target.value)}
               placeholder="Enter gas fee (USD)" 
               className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
            />
@@ -343,5 +316,3 @@ export default function ArbitragePage() {
     </div>
   );
 }
-
-    
