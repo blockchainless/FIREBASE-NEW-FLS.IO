@@ -20,6 +20,43 @@ const ArbitrageSelect = ({ value, onValueChange, options, placeholder }) => (
   </Select>
 );
 
+// --- MOCK DATA FOR SIMULATION ---
+const protocolData = {
+  'aave-v3': {
+    name: "Aave V3",
+    fee: 0.0005,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+  },
+  'balancer-v3': {
+    name: "Balancer V3",
+    fee: 0.001,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+  },
+  'uniswap-v3': {
+    name: "Uniswap V3",
+    fee: 0.0015,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+  },
+  'bancor-v3': {
+    name: "Bancor V3",
+    fee: 0.0,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550.00, "WETH": 2625.00, "BTC": 100000.00, "WBTC": 100000.00 }
+  }
+};
+
+const dexPriceFactors = {
+  'uniswap': 1.0, 'sushiswap': 1.001, 'kyberswap': 0.999, 
+  'pancakeswap': 1.0, 'coreswap': 1.002, 'linxswap': 1.0015,
+  'doxswap': 0.998, 'optimumswap': 1.0005,
+};
+
+const dexFees = {
+  'uniswap': 0.003, 'sushiswap': 0.003, 'kyberswap': 0.0025, 
+  'pancakeswap': 0.0025, 'coreswap': 0.003, 'linxswap': 0.003,
+  'doxswap': 0.004, 'optimumswap': 0.002,
+};
+// --------------------------------
+
 export default function ArbitragePage() {
   const router = useRouter();
 
@@ -50,38 +87,16 @@ export default function ArbitragePage() {
   const [showGasFeeInput, setShowGasFeeInput] = useState(true);
   const [executeClicked, setExecuteClicked] = useState(false);
 
-  // --- MOCK DATA FOR SIMULATION ---
-  const coinPrices = {
-    'USDT': 1, 'USDC': 1, 'ETH': 2500, 'WETH': 2500, 'WBTC': 50000,
-    'BTC': 50000,
-  };
-
-  const dexPriceFactors = {
-    'uniswap': 1.0, 'sushiswap': 1.001, 'kyberswap': 0.999, 
-    'pancakeswap': 1.0, 'coreswap': 1.002, 'linxswap': 1.0015,
-    'doxswap': 0.998, 'optimumswap': 1.0005,
-  };
-
-  const lenderFees = {
-    'aave-v3': 0.0005,
-    'uniswap-v3': 0.003,
-    'balancer-v3': 0,
-    'bancor-v3': 0.001,
-  };
-
-  const dexFees = {
-    'uniswap': 0.003, 'sushiswap': 0.003, 'kyberswap': 0.0025, 
-    'pancakeswap': 0.0025, 'coreswap': 0.003, 'linxswap': 0.003,
-    'doxswap': 0.004, 'optimumswap': 0.002,
-  };
-  // --------------------------------
-
   const calculateFeesAndProfit = useCallback(() => {
     const principal = parseFloat(fromAmount);
-    if (!principal || !fromCoin || !toCoin || !fromSwap || !toSwap || !lender) {
+    const selectedProtocol = protocolData[lender];
+
+    if (!principal || !fromCoin || !toCoin || !fromSwap || !toSwap || !lender || !selectedProtocol) {
       setEstimatedProfit('0.00');
       return;
     }
+
+    const coinPrices = selectedProtocol.tokens;
 
     // 1. Calculate price spread and gross profit
     const fromCoinPrice = coinPrices[fromCoin] || 1;
@@ -104,7 +119,7 @@ export default function ArbitragePage() {
     const grossProfit = returnValueUSDAfterFee - principalValue;
 
     // 2. Calculate fees
-    const currentLenderFee = principalValue * (lenderFees[lender] || 0);
+    const currentLenderFee = principalValue * (selectedProtocol.fee || 0);
 
     let currentGasFee = 0;
     if (showGasFeeInput) {
@@ -122,7 +137,7 @@ export default function ArbitragePage() {
     const netProfit = grossProfit - currentLenderFee - currentGasFee;
     setEstimatedProfit(netProfit.toFixed(2));
 
-  }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput, coinPrices, dexPriceFactors, dexFees, lenderFees]);
+  }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput]);
 
   useEffect(() => {
     calculateFeesAndProfit();
@@ -131,6 +146,10 @@ export default function ArbitragePage() {
   const handleAmountChange = (value, type) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
     const amount = parseFloat(controlledValue) || 0;
+    const selectedProtocol = protocolData[lender];
+
+    if (!selectedProtocol) return;
+    const coinPrices = selectedProtocol.tokens;
 
     if (type === 'from') {
       setFromAmount(controlledValue);
@@ -158,11 +177,17 @@ export default function ArbitragePage() {
     }
   };
 
-  const handleGasFeeInputChange = (value) => {
+  const handleGasFeeInputChange = (e) => {
+    const value = e.target.value;
     const controlledValue = value.replace(/[^0-9.]/g, '');
     setGasFeeInput(controlledValue);
     
     const gasFee = parseFloat(controlledValue) || 0;
+    const selectedProtocol = protocolData[lender];
+
+    if (!selectedProtocol) return;
+    const coinPrices = selectedProtocol.tokens;
+
     if (gasFee > 0 && fromCoin && toCoin && fromSwap && toSwap && lender) {
       const fromCoinPrice = coinPrices[fromCoin] || 1;
       const toCoinPrice = coinPrices[toCoin] || 1;
@@ -170,7 +195,7 @@ export default function ArbitragePage() {
       const priceToCoinOnToSwap = toCoinPrice * (dexPriceFactors[toSwap] || 1);
       const fromSwapFee = dexFees[fromSwap] || 0;
       const toSwapFee = dexFees[toSwap] || 0;
-      const currentLenderFeeRate = lenderFees[lender] || 0;
+      const currentLenderFeeRate = selectedProtocol.fee || 0;
 
       const grossProfitRate = (priceToCoinOnToSwap / priceToCoinOnFromSwap) * (1 - fromSwapFee) * (1 - toSwapFee) - 1;
       const effectiveProfitRate = grossProfitRate - currentLenderFeeRate;
@@ -182,6 +207,7 @@ export default function ArbitragePage() {
         setFromAmount(requiredFromAmount.toFixed(2));
         const toAmountValue = (requiredFromAmount * fromCoinPrice) / toCoinPrice;
         setToAmount(toAmountValue.toFixed(6));
+        setShowGasFeeInput(false);
       } else {
         setFromAmount('');
         setToAmount('');
@@ -264,7 +290,7 @@ export default function ArbitragePage() {
              <Input 
                 type="text" 
                 value={gasFeeInput} 
-                onChange={(e) => handleGasFeeInputChange(e.target.value)}
+                onChange={handleGasFeeInputChange}
                 placeholder="Enter gas fee (USD)" 
                 className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
              />
