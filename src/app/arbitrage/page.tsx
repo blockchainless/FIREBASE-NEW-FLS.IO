@@ -309,7 +309,7 @@ export default function ArbitragePage() {
           <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue leading-6">Estimated Arbitrage Profit: ${estimatedProfit}</Label>
           
           <Button onClick={handleExecute} className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red">
-            {executeClicked ? 'Reset' : 'Execute'}
+            {executeClicked ? 'Reset' : 'Reset'}
           </Button>
 
           <Button onClick={() => router.push('/information')} variant="outline" className="w-full h-12 text-lg">
@@ -330,5 +330,3 @@ export default function ArbitragePage() {
     </div>
   );
 }
-
-    
