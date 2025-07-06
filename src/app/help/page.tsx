@@ -11,12 +11,12 @@ export default function HelpPage() {
         <div className="w-full max-w-lg mx-auto animate-fade-in">
             <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue">
                 <CardHeader>
-                    <CardTitle className="text-3xl text-center font-headline">DEMO - DeFi Arbitrage Platform</CardTitle>
+                    <CardTitle className="text-3xl text-center font-headline">flashloanstudio.io - Help</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-foreground/90">
                     <div>
-                        <p className="font-bold text-lg">What is DEMO?</p>
-                        <p>DEMO is a decentralized arbitrage trading platform that helps you profit from price differences across different decentralized exchanges (DEXs). Our platform automates the process of finding and executing profitable arbitrage opportunities.</p>
+                        <p className="font-bold text-lg">What is flashloanstudio.io?</p>
+                        <p>flashloanstudio.io is a decentralized arbitrage trading platform that helps you profit from price differences across different decentralized exchanges (DEXs). Our platform automates the process of finding and executing profitable arbitrage opportunities.</p>
                     </div>
                     <div>
                         <p className="font-bold text-lg">How it works:</p>

@@ -13,7 +13,7 @@ export default function WelcomePage() {
     <div className="flex flex-col items-center justify-center space-y-8">
       <div className="text-center space-y-4 animate-fade-in-down">
         <h1 className="text-5xl md:text-6xl font-bold font-headline">
-          Demo
+          flashloanstudio.io
         </h1>
         <p className="text-muted-foreground max-w-sm mx-auto">
           Select restore if you had wallet before to access it. Select create wallet if you need to open new wallet to use this dapp.

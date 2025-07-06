@@ -2,8 +2,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Demo',
-  description: 'Restore or create your crypto wallet.',
+  title: 'flashloanstudio.io',
+  description: 'Decentralized arbitrage trading platform.',
 };
 
 export default function RootLayout({
