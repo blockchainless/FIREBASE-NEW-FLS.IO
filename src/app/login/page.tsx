@@ -19,7 +19,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex justify-center">
-        <AuthLayout title="Unlock Wallet">
+        <AuthLayout title="Login">
             <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>

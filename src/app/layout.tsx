@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'CryptoStart',
+  title: 'Demo',
   description: 'Restore or create your crypto wallet.',
 };
 

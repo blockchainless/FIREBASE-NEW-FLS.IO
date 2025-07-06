@@ -6,10 +6,10 @@ export default function WelcomePage() {
   return (
     <div className="flex flex-col items-center justify-center space-y-12">
       <h1 className="text-5xl md:text-6xl font-bold font-headline text-center animate-fade-in-down">
-        CryptoStart
+        Demo
       </h1>
       <div className="w-full max-w-sm space-y-4 animate-fade-in-up">
-        <Link href="/setup" passHref>
+        <Link href="/setup?action=restore" passHref>
           <Button
             variant="outline"
             size="lg"
@@ -19,7 +19,7 @@ export default function WelcomePage() {
             Restore Wallet
           </Button>
         </Link>
-        <Link href="/setup" passHref>
+        <Link href="/setup?action=create" passHref>
           <Button
             variant="outline"
             size="lg"
