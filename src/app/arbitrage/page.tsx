@@ -164,7 +164,7 @@ export default function ArbitragePage() {
 
   return (
     <div className="w-full max-w-sm mx-auto animate-fade-in">
-      <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue min-h-[920px]">
+      <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue h-[920px]">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline">flashloanstudio.io</CardTitle>
         </CardHeader>

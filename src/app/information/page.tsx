@@ -1,8 +1,6 @@
-
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
@@ -11,14 +9,13 @@ export default function InformationPage() {
 
     return (
         <div className="w-full max-w-sm mx-auto animate-fade-in">
-            <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue flex flex-col min-h-[920px]">
+            <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue flex flex-col h-[920px]">
                 <CardHeader>
                     <CardTitle className="text-3xl text-center font-headline">Information</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow flex flex-col min-h-0">
-                    <div className="flex-grow border-2 border-primary/50 rounded-md overflow-hidden">
-                        <ScrollArea className="h-full no-scrollbar">
-                            <div className="p-6 text-foreground/90 space-y-4">
+                <CardContent className="flex-grow p-6 pt-0 flex flex-col min-h-0">
+                    <div className="flex-1 border-2 border-primary/50 rounded-md overflow-y-auto no-scrollbar">
+                        <div className="p-6 text-foreground/90 space-y-4">
                                 <div>
                                     <p className="font-bold text-lg">What is FlashLoanStudio.io?</p>
                                     <p>FlashLoanStudio.io is an advanced decentralized finance (DeFi) arbitrage trading platform designed to empower users to capitalize on price discrepancies across various decentralized exchanges (DEXs). By leveraging cutting-edge automation, FlashLoanStudio.io identifies and executes profitable arbitrage opportunities seamlessly, making it accessible for both novice and experienced traders to maximize their returns in the dynamic world of DeFi.</p>
@@ -55,8 +52,7 @@ export default function InformationPage() {
                                     <p className="font-bold text-lg">Contact Us:</p>
                                     <p>If you have any questions, feedback, or need assistance, you can reach out to the FlashLoanStudio.io development team by sending an email to <a href="mailto:flashloanstudio@arbitrage.io">flashloanstudio@arbitrage.io</a>. We’re here to help you navigate the platform and make the most of your DeFi arbitrage experience.</p>
                                 </div>
-                            </div>
-                        </ScrollArea>
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter className="pt-6">
