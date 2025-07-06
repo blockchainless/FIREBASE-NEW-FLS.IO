@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FormEvent, Suspense, useEffect, useState } from 'react';
+import { FormEvent, Suspense, useEffect, useState, useCallback } from 'react';
 import { AuthLayout } from '@/components/shared/auth-layout';
 import * as bip39 from 'bip39';
 import Link from 'next/link';
@@ -20,12 +20,16 @@ function SetupPageContent() {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [words, setWords] = useState(Array(24).fill(''));
 
+  const generateNewSeed = useCallback(() => {
+    const mnemonic = bip39.generateMnemonic(256, undefined, wordlist); // 24 words
+    setSeedPhrase(mnemonic);
+  }, []);
+
   useEffect(() => {
     if (action === 'create') {
-      const mnemonic = bip39.generateMnemonic(256, undefined, wordlist); // 24 words
-      setSeedPhrase(mnemonic);
+      generateNewSeed();
     }
-  }, [action]);
+  }, [action, generateNewSeed]);
 
   const handleRestoreChange = (index: number, value: string) => {
     const newWords = [...words];
@@ -57,6 +61,14 @@ function SetupPageContent() {
             </div>
           </div>
           <div className="flex flex-col space-y-2">
+            <Button
+                type="button"
+                variant="outline"
+                onClick={generateNewSeed}
+                className="w-full h-12"
+            >
+                Generate New Seed
+            </Button>
             <Button
               type="submit"
               disabled={!seedPhrase}
