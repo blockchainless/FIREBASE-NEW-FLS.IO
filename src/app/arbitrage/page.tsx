@@ -96,7 +96,10 @@ export default function ArbitragePage() {
   const handleGasFeeInputChange = (value) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
     setGasFeeInput(controlledValue);
-    const gasFee = parseFloat(controlledValue) || 0;
+  };
+
+  const handleGasFeeBlur = () => {
+    const gasFee = parseFloat(gasFeeInput) || 0;
     if (gasFee > 0 && !fromAmount && !toAmount) {
       const arbitrageAmount = Math.round(gasFee * 100);
       setFromAmount(String(arbitrageAmount));
@@ -177,7 +180,14 @@ export default function ArbitragePage() {
           <Input type="text" value={toAmount} onChange={(e) => handleAmountChange(e.target.value, 'to')} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           
           {showGasFeeInput ? (
-             <Input type="text" value={gasFeeInput} onChange={(e) => handleGasFeeInputChange(e.target.value)} placeholder="Enter gas fee (USD)" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
+             <Input 
+                type="text" 
+                value={gasFeeInput} 
+                onChange={(e) => handleGasFeeInputChange(e.target.value)} 
+                onBlur={handleGasFeeBlur}
+                placeholder="Enter gas fee (USD)" 
+                className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
+             />
           ) : (
              <Label className="block text-center w-full p-3 h-12 border rounded-md bg-black/30 border-primary shadow-neon-blue">Gas Fee: ${gasFeeDisplay}</Label>
           )}
