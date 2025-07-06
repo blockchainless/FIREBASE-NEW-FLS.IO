@@ -44,16 +44,27 @@ const protocolData = {
   }
 };
 
-const dexPriceFactors = {
-  'uniswap': 1.0, 'sushiswap': 1.001, 'kyberswap': 0.999, 
-  'pancakeswap': 1.0, 'coreswap': 1.002, 'linxswap': 1.0015,
-  'doxswap': 0.998, 'optimumswap': 1.0005,
-};
-
-const dexFees = {
-  'uniswap': 0.003, 'sushiswap': 0.003, 'kyberswap': 0.0025, 
-  'pancakeswap': 0.0025, 'coreswap': 0.003, 'linxswap': 0.003,
-  'doxswap': 0.004, 'optimumswap': 0.002,
+const dexData = {
+  'uniswap-v3': {
+    name: "Uniswap V3",
+    fee: 0.0065,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550, "WETH": 2630, "BTC": 100000, "WBTC": 103000 }
+  },
+  'sushiswap': {
+    name: "Sushiswap",
+    fee: 0.008,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2570, "WETH": 2650, "BTC": 100020, "WBTC": 103020 }
+  },
+  'kyberswap': {
+    name: "Kyberswap",
+    fee: 0.006,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2590, "WETH": 2670, "BTC": 100040, "WBTC": 103040 }
+  },
+  'pancakeswap': {
+    name: "Pancakeswap",
+    fee: 0.0075,
+    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2610, "WETH": 2690, "BTC": 100060, "WBTC": 103060 }
+  }
 };
 // --------------------------------
 
@@ -63,7 +74,7 @@ export default function ArbitragePage() {
   const initial_state = {
     network: 'ethereum',
     lender: 'aave-v3',
-    fromSwap: 'uniswap',
+    fromSwap: 'uniswap-v3',
     toSwap: 'sushiswap',
     fromCoin: 'USDT',
     toCoin: 'WETH',
@@ -89,37 +100,43 @@ export default function ArbitragePage() {
 
   const calculateFeesAndProfit = useCallback(() => {
     const principal = parseFloat(fromAmount);
-    const selectedProtocol = protocolData[lender];
+    const selectedLender = protocolData[lender];
+    const selectedFromSwap = dexData[fromSwap];
+    const selectedToSwap = dexData[toSwap];
 
-    if (!principal || !fromCoin || !toCoin || !fromSwap || !toSwap || !lender || !selectedProtocol) {
+    if (!principal || !fromCoin || !toCoin || !selectedLender || !selectedFromSwap || !selectedToSwap) {
       setEstimatedProfit('0.00');
       return;
     }
 
-    const coinPrices = selectedProtocol.tokens;
+    // Prices from different protocols/DEXs
+    const priceFromCoin_Lender = selectedLender.tokens[fromCoin];
+    const priceFromCoin_FromSwap = selectedFromSwap.tokens[fromCoin];
+    const priceToCoin_FromSwap = selectedFromSwap.tokens[toCoin];
+    const priceFromCoin_ToSwap = selectedToSwap.tokens[fromCoin];
+    const priceToCoin_ToSwap = selectedToSwap.tokens[toCoin];
 
-    // 1. Calculate price spread and gross profit
-    const fromCoinPrice = coinPrices[fromCoin] || 1;
-    const toCoinPrice = coinPrices[toCoin] || 1;
-
-    const priceToCoinOnFromSwap = toCoinPrice * (dexPriceFactors[fromSwap] || 1);
-    const priceToCoinOnToSwap = toCoinPrice * (dexPriceFactors[toSwap] || 1);
-
-    const fromSwapFee = dexFees[fromSwap] || 0;
-    const toSwapFee = dexFees[toSwap] || 0;
+    // Fees
+    const lenderFeeRate = selectedLender.fee;
+    const fromSwapFee = selectedFromSwap.fee;
+    const toSwapFee = selectedToSwap.fee;
     
-    const principalValue = principal * fromCoinPrice;
+    // Trade Simulation
+    // 1. Swap fromCoin for toCoin on fromSwap
+    const amountOfToCoin = (principal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
+    const amountOfToCoinAfterFee = amountOfToCoin * (1 - fromSwapFee);
     
-    const intermediateToCoin = principalValue / priceToCoinOnFromSwap;
-    const intermediateToCoinAfterFee = intermediateToCoin * (1 - fromSwapFee);
-    
-    const returnValueUSD = intermediateToCoinAfterFee * priceToCoinOnToSwap;
-    const returnValueUSDAfterFee = returnValueUSD * (1 - toSwapFee);
+    // 2. Swap toCoin back to fromCoin on toSwap
+    const endValueUSD = amountOfToCoinAfterFee * priceToCoin_ToSwap;
+    const endAmountOfFromCoin = endValueUSD / priceFromCoin_ToSwap;
+    const endAmountOfFromCoinAfterFee = endAmountOfFromCoin * (1 - toSwapFee);
 
-    const grossProfit = returnValueUSDAfterFee - principalValue;
+    // Profit Calculation
+    const grossProfitInFromCoin = endAmountOfFromCoinAfterFee - principal;
+    const grossProfitUSD = grossProfitInFromCoin * priceFromCoin_Lender;
 
-    // 2. Calculate fees
-    const currentLenderFee = principalValue * (selectedProtocol.fee || 0);
+    const principalValueUSD = principal * priceFromCoin_Lender;
+    const lenderFeeUSD = principalValueUSD * lenderFeeRate;
 
     let currentGasFee = 0;
     if (showGasFeeInput) {
@@ -134,7 +151,7 @@ export default function ArbitragePage() {
       setGasFeeDisplay(currentGasFee.toFixed(2));
     }
     
-    const netProfit = grossProfit - currentLenderFee - currentGasFee;
+    const netProfit = grossProfitUSD - lenderFeeUSD - currentGasFee;
     setEstimatedProfit(netProfit.toFixed(2));
 
   }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput]);
@@ -143,35 +160,23 @@ export default function ArbitragePage() {
     calculateFeesAndProfit();
   }, [calculateFeesAndProfit]);
 
-  const handleAmountChange = (value, type) => {
+  const handleAmountChange = (value) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
-    const amount = parseFloat(controlledValue) || 0;
-    const selectedProtocol = protocolData[lender];
-
-    if (!selectedProtocol) return;
-    const coinPrices = selectedProtocol.tokens;
-
-    if (type === 'from') {
-      setFromAmount(controlledValue);
-      if (amount > 0 && fromCoin && toCoin && coinPrices[fromCoin] && coinPrices[toCoin]) {
-        const toAmountValue = (amount * coinPrices[fromCoin]) / coinPrices[toCoin];
-        setToAmount(toAmountValue.toFixed(6));
-      } else {
-        setToAmount('');
-      }
-    } else { // type === 'to'
-      setToAmount(controlledValue);
-      if (amount > 0 && fromCoin && toCoin && coinPrices[fromCoin] && coinPrices[toCoin]) {
-        const fromAmountValue = (amount * coinPrices[toCoin]) / coinPrices[fromCoin];
-        setFromAmount(fromAmountValue.toFixed(2));
-      } else {
-        setFromAmount('');
-      }
-    }
+    setFromAmount(controlledValue);
     
+    const amount = parseFloat(controlledValue) || 0;
+    const fromDex = dexData[fromSwap];
+
+    if (amount > 0 && fromCoin && toCoin && fromDex?.tokens[fromCoin] && fromDex?.tokens[toCoin]) {
+      const toAmountValue = (amount * fromDex.tokens[fromCoin]) / fromDex.tokens[toCoin];
+      setToAmount(toAmountValue.toFixed(6));
+    } else {
+      setToAmount('');
+    }
+
     if (controlledValue) {
       setShowGasFeeInput(false);
-    } else if ((type === 'from' && !toAmount) || (type === 'to' && !fromAmount)) {
+    } else {
       setShowGasFeeInput(true);
       setGasFeeInput('');
     }
@@ -183,35 +188,42 @@ export default function ArbitragePage() {
     setGasFeeInput(controlledValue);
     
     const gasFee = parseFloat(controlledValue) || 0;
-    const selectedProtocol = protocolData[lender];
+    const selectedLender = protocolData[lender];
+    const selectedFromSwap = dexData[fromSwap];
+    const selectedToSwap = dexData[toSwap];
 
-    if (!selectedProtocol) return;
-    const coinPrices = selectedProtocol.tokens;
+    if (gasFee > 0 && fromCoin && toCoin && selectedLender && selectedFromSwap && selectedToSwap) {
+        const priceFromCoin_Lender = selectedLender.tokens[fromCoin];
+        const priceFromCoin_FromSwap = selectedFromSwap.tokens[fromCoin];
+        const priceToCoin_FromSwap = selectedFromSwap.tokens[toCoin];
+        const priceFromCoin_ToSwap = selectedToSwap.tokens[fromCoin];
+        const priceToCoin_ToSwap = selectedToSwap.tokens[toCoin];
 
-    if (gasFee > 0 && fromCoin && toCoin && fromSwap && toSwap && lender) {
-      const fromCoinPrice = coinPrices[fromCoin] || 1;
-      const toCoinPrice = coinPrices[toCoin] || 1;
-      const priceToCoinOnFromSwap = toCoinPrice * (dexPriceFactors[fromSwap] || 1);
-      const priceToCoinOnToSwap = toCoinPrice * (dexPriceFactors[toSwap] || 1);
-      const fromSwapFee = dexFees[fromSwap] || 0;
-      const toSwapFee = dexFees[toSwap] || 0;
-      const currentLenderFeeRate = selectedProtocol.fee || 0;
+        if (!priceFromCoin_Lender || !priceFromCoin_FromSwap || !priceToCoin_FromSwap || !priceFromCoin_ToSwap || !priceToCoin_ToSwap) {
+            setFromAmount('');
+            setToAmount('');
+            return;
+        }
 
-      const grossProfitRate = (priceToCoinOnToSwap / priceToCoinOnFromSwap) * (1 - fromSwapFee) * (1 - toSwapFee) - 1;
-      const effectiveProfitRate = grossProfitRate - currentLenderFeeRate;
-      
-      if (effectiveProfitRate > 0) {
-        const requiredPrincipal = gasFee / effectiveProfitRate;
-        const requiredFromAmount = requiredPrincipal / fromCoinPrice;
+        const lenderFeeRate = selectedLender.fee;
+        const fromSwapFee = selectedFromSwap.fee;
+        const toSwapFee = selectedToSwap.fee;
+
+        const grossProfitRateInFromCoin = ((priceFromCoin_FromSwap / priceToCoin_FromSwap) * (priceToCoin_ToSwap / priceFromCoin_ToSwap) * (1 - fromSwapFee) * (1 - toSwapFee)) - 1;
         
-        setFromAmount(requiredFromAmount.toFixed(2));
-        const toAmountValue = (requiredFromAmount * fromCoinPrice) / toCoinPrice;
-        setToAmount(toAmountValue.toFixed(6));
-        setShowGasFeeInput(false);
-      } else {
-        setFromAmount('');
-        setToAmount('');
-      }
+        const effectiveProfitRate = grossProfitRateInFromCoin - lenderFeeRate;
+      
+        if (effectiveProfitRate > 0) {
+            const requiredPrincipalInFromCoin = (gasFee / priceFromCoin_Lender) / effectiveProfitRate;
+            setFromAmount(requiredPrincipalInFromCoin.toFixed(2));
+            
+            const toAmountValue = (requiredPrincipalInFromCoin * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
+            setToAmount(toAmountValue.toFixed(6));
+            setShowGasFeeInput(false);
+        } else {
+            setFromAmount('');
+            setToAmount('');
+        }
     } else if (controlledValue === '' || gasFee === 0) {
       setFromAmount('');
       setToAmount('');
@@ -254,14 +266,9 @@ export default function ArbitragePage() {
       { value: 'balancer-v3', label: 'Balancer V3' },
       { value: 'bancor-v3', label: 'Bancor V3' },
   ];
-  const fromSwapOptions = [
-      { value: 'uniswap', label: 'Uniswap' }, { value: 'sushiswap', label: 'Sushiswap' },
+  const dexOptions = [
+      { value: 'uniswap-v3', label: 'Uniswap V3' }, { value: 'sushiswap', label: 'Sushiswap' },
       { value: 'kyberswap', label: 'Kyberswap' }, { value: 'pancakeswap', label: 'Pancakeswap' },
-  ];
-  const toSwapOptions = [
-      { value: 'sushiswap', label: 'Sushiswap' }, { value: 'coreswap', label: 'Coreswap' },
-      { value: 'linxswap', label: 'Linxswap' }, { value: 'doxswap', label: 'Doxswap' },
-      { value: 'optimumswap', label: 'Optimumswap' },
   ];
   const coinOptions = [
       { value: 'USDT', label: 'USDT' }, { value: 'USDC', label: 'USDC' },
@@ -278,13 +285,13 @@ export default function ArbitragePage() {
         <CardContent className="space-y-3">
           <ArbitrageSelect value={network} onValueChange={setNetwork} options={networkOptions} placeholder="Select Network Provider" />
           <ArbitrageSelect value={lender} onValueChange={setLender} options={lenderOptions} placeholder="Select Borrow Lender" />
-          <ArbitrageSelect value={fromSwap} onValueChange={setFromSwap} options={fromSwapOptions} placeholder="Arbitrage From Swap" />
-          <ArbitrageSelect value={toSwap} onValueChange={setToSwap} options={toSwapOptions} placeholder="Arbitrage To Swap" />
-          <ArbitrageSelect value={fromCoin} onValueChange={(value) => { setFromCoin(value); handleAmountChange(fromAmount, 'from'); }} options={coinOptions} placeholder="Arbitrage Coin From" />
-          <ArbitrageSelect value={toCoin} onValueChange={(value) => { setToCoin(value); handleAmountChange(fromAmount, 'from'); }} options={coinOptions} placeholder="Arbitrage Coin To" />
+          <ArbitrageSelect value={fromSwap} onValueChange={setFromSwap} options={dexOptions} placeholder="Arbitrage From Swap" />
+          <ArbitrageSelect value={toSwap} onValueChange={setToSwap} options={dexOptions} placeholder="Arbitrage To Swap" />
+          <ArbitrageSelect value={fromCoin} onValueChange={(value) => { setFromCoin(value); handleAmountChange(fromAmount); }} options={coinOptions} placeholder="Arbitrage Coin From" />
+          <ArbitrageSelect value={toCoin} onValueChange={(value) => { setToCoin(value); handleAmountChange(fromAmount); }} options={coinOptions} placeholder="Arbitrage Coin To" />
 
-          <Input type="text" value={fromAmount} onChange={(e) => handleAmountChange(e.target.value, 'from')} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
-          <Input type="text" value={toAmount} onChange={(e) => handleAmountChange(e.target.value, 'to')} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" readOnly />
+          <Input type="text" value={fromAmount} onChange={(e) => handleAmountChange(e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
+          <Input type="text" value={toAmount} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" readOnly />
           
           {showGasFeeInput ? (
              <Input 
