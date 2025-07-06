@@ -29,7 +29,7 @@ export default function ArbitragePage() {
     fromSwap: 'uniswap',
     toSwap: 'sushiswap',
     fromCoin: 'USDT',
-    toCoin: 'USDC',
+    toCoin: 'WETH',
     fromAmount: '',
     toAmount: '',
     gasFeeInput: '',
@@ -50,32 +50,78 @@ export default function ArbitragePage() {
   const [showGasFeeInput, setShowGasFeeInput] = useState(true);
   const [executeClicked, setExecuteClicked] = useState(false);
 
+  // --- MOCK DATA FOR SIMULATION ---
+  const coinPrices = {
+    'USDT': 1, 'USDC': 1, 'ETH': 2500, 'WETH': 2500, 'WBTC': 50000,
+    'BTC': 50000, 'DOX': 0.1, 'LINX': 0.5, 'MAGIC': 2,
+  };
+
+  const dexPriceFactors = {
+    'uniswap': 1.0, 'sushiswap': 1.001, 'kyberswap': 0.999, 
+    'pancakeswap': 1.0, 'coreswap': 1.002, 'linxswap': 1.0015,
+    'doxswap': 0.998, 'optimumswap': 1.0005,
+  };
+
+  const lenderFees = {
+    'balancer-v2': 0, 'balancer-v3': 0, 'balancer': 0, 
+    'aave-ark': 0.0005, 'aave-v2': 0.0009, 'aave-v3': 0.0005,
+    'uniswap-v1': 0.003, 'uniswap-v2': 0.003, 'uniswap-v3': 0.003, 'uniswap-v4': 0.003,
+  };
+
+  const dexFees = {
+    'uniswap': 0.003, 'sushiswap': 0.003, 'kyberswap': 0.0025, 
+    'pancakeswap': 0.0025, 'coreswap': 0.003, 'linxswap': 0.003,
+    'doxswap': 0.004, 'optimumswap': 0.002,
+  };
+  // --------------------------------
+
   const calculateFeesAndProfit = useCallback(() => {
+    const principal = parseFloat(fromAmount);
+    if (!principal || !fromCoin || !toCoin || !fromSwap || !toSwap || !lender) {
+      setEstimatedProfit('0.00');
+      return;
+    }
+
+    // 1. Calculate price spread and gross profit
+    const fromCoinPrice = coinPrices[fromCoin] || 1;
+    const toCoinPrice = coinPrices[toCoin] || 1;
+
+    const priceToCoinOnFromSwap = toCoinPrice * (dexPriceFactors[fromSwap] || 1);
+    const priceToCoinOnToSwap = toCoinPrice * (dexPriceFactors[toSwap] || 1);
+
+    const fromSwapFee = dexFees[fromSwap] || 0;
+    const toSwapFee = dexFees[toSwap] || 0;
+    
+    const principalValue = principal * fromCoinPrice;
+    
+    const intermediateToCoin = principalValue / priceToCoinOnFromSwap;
+    const intermediateToCoinAfterFee = intermediateToCoin * (1 - fromSwapFee);
+    
+    const returnValueUSD = intermediateToCoinAfterFee * priceToCoinOnToSwap;
+    const returnValueUSDAfterFee = returnValueUSD * (1 - toSwapFee);
+
+    const grossProfit = returnValueUSDAfterFee - principalValue;
+
+    // 2. Calculate fees
+    const currentLenderFee = principalValue * (lenderFees[lender] || 0);
+
     let currentGasFee = 0;
-    const amount = parseFloat(fromAmount) || parseFloat(toAmount) || 0;
-
-    if (!showGasFeeInput) {
-        let networkFee = 0;
-        if (network === 'ethereum') networkFee = 50;
-        else if (['arbitrum', 'optimism'].includes(network)) networkFee = 5;
-        else if (network === 'polygon') networkFee = 1;
-        else networkFee = 10;
-        
-        const dexFee = (fromSwap && toSwap && amount > 0) ? ((fromSwap === 'uniswap' || toSwap === 'uniswap') ? 0.003 * amount : 0.002 * amount) : 0;
-        currentGasFee = networkFee + dexFee;
-        setGasFeeDisplay(currentGasFee.toFixed(2));
+    if (showGasFeeInput) {
+      currentGasFee = parseFloat(gasFeeInput) || 0;
     } else {
-        currentGasFee = parseFloat(gasFeeInput) || 0;
+      let networkFee = 0;
+      if (network === 'ethereum') networkFee = 50;
+      else if (['arbitrum', 'optimism'].includes(network)) networkFee = 5;
+      else if (network === 'polygon') networkFee = 1;
+      else networkFee = 10;
+      currentGasFee = networkFee;
+      setGasFeeDisplay(currentGasFee.toFixed(2));
     }
-
-    let priceDiff = 0;
-    if (fromCoin && toCoin && fromCoin !== toCoin) {
-        priceDiff = (fromSwap === 'uniswap' && toSwap === 'sushiswap') ? 0.05 : 0.03;
-    }
-    const grossProfit = amount * priceDiff;
-    const netProfit = grossProfit - currentGasFee;
+    
+    const netProfit = grossProfit - currentLenderFee - currentGasFee;
     setEstimatedProfit(netProfit.toFixed(2));
-  }, [fromAmount, toAmount, network, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput]);
+
+  }, [fromAmount, network, lender, fromSwap, toSwap, fromCoin, toCoin, gasFeeInput, showGasFeeInput]);
 
   useEffect(() => {
     calculateFeesAndProfit();
@@ -83,8 +129,25 @@ export default function ArbitragePage() {
 
   const handleAmountChange = (value, type) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
-    const setter = type === 'from' ? setFromAmount : setToAmount;
-    setter(controlledValue);
+    const amount = parseFloat(controlledValue) || 0;
+
+    if (type === 'from') {
+      setFromAmount(controlledValue);
+      if (amount > 0 && fromCoin && toCoin && coinPrices[fromCoin] && coinPrices[toCoin]) {
+        const toAmountValue = (amount * coinPrices[fromCoin]) / coinPrices[toCoin];
+        setToAmount(toAmountValue.toFixed(6));
+      } else {
+        setToAmount('');
+      }
+    } else { // type === 'to'
+      setToAmount(controlledValue);
+      if (amount > 0 && fromCoin && toCoin && coinPrices[fromCoin] && coinPrices[toCoin]) {
+        const fromAmountValue = (amount * coinPrices[toCoin]) / coinPrices[fromCoin];
+        setFromAmount(fromAmountValue.toFixed(2));
+      } else {
+        setFromAmount('');
+      }
+    }
     
     if (controlledValue) {
       setShowGasFeeInput(false);
@@ -97,28 +160,34 @@ export default function ArbitragePage() {
   const handleGasFeeInputChange = (value) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
     setGasFeeInput(controlledValue);
-    
     const gasFee = parseFloat(controlledValue) || 0;
-    // If the gas fee input is visible, we are in "budget-first" mode.
-    if (showGasFeeInput) {
-        if (gasFee > 0) {
-            const arbitrageAmount = Math.round(gasFee * 100);
-            setFromAmount(String(arbitrageAmount));
-            setToAmount(String(arbitrageAmount));
-        } else {
-            // If the gas input is cleared, clear the calculated amounts
-            setFromAmount('');
-            setToAmount('');
-        }
-    }
-  };
 
-  const handleGasFeeBlur = () => {
-    const gasFee = parseFloat(gasFeeInput) || 0;
-    // If the user has entered a gas fee, and from/to amounts have been calculated,
-    // then hide the input and show the label view.
-    if (gasFee > 0 && fromAmount && toAmount) {
-      setShowGasFeeInput(false);
+    if (showGasFeeInput && gasFee > 0 && fromCoin && toCoin && fromSwap && toSwap && lender) {
+      const fromCoinPrice = coinPrices[fromCoin] || 1;
+      const toCoinPrice = coinPrices[toCoin] || 1;
+      const priceToCoinOnFromSwap = toCoinPrice * (dexPriceFactors[fromSwap] || 1);
+      const priceToCoinOnToSwap = toCoinPrice * (dexPriceFactors[toSwap] || 1);
+      const fromSwapFee = dexFees[fromSwap] || 0;
+      const toSwapFee = dexFees[toSwap] || 0;
+      const currentLenderFeeRate = lenderFees[lender] || 0;
+
+      const grossProfitRate = (priceToCoinOnToSwap / priceToCoinOnFromSwap) * (1 - fromSwapFee) * (1 - toSwapFee) - 1;
+      const effectiveProfitRate = grossProfitRate - currentLenderFeeRate;
+
+      if (effectiveProfitRate > 0) {
+        const requiredPrincipal = (gasFee + 1) / effectiveProfitRate; // Target $1 profit
+        const requiredFromAmount = requiredPrincipal / fromCoinPrice;
+        
+        setFromAmount(requiredFromAmount.toFixed(2));
+        const toAmountValue = (requiredFromAmount * coinPrices[fromCoin]) / coinPrices[toCoin];
+        setToAmount(toAmountValue.toFixed(6));
+      } else {
+        setFromAmount('');
+        setToAmount('');
+      }
+    } else if (gasFee === 0) {
+      setFromAmount('');
+      setToAmount('');
     }
   };
 
@@ -191,14 +260,13 @@ export default function ArbitragePage() {
           <ArbitrageSelect value={toCoin} onValueChange={setToCoin} options={coinOptions} placeholder="Arbitrage Coin To" />
 
           <Input type="text" value={fromAmount} onChange={(e) => handleAmountChange(e.target.value, 'from')} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
-          <Input type="text" value={toAmount} onChange={(e) => handleAmountChange(e.target.value, 'to')} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
+          <Input type="text" value={toAmount} onChange={(e) => handleAmountChange(e.target.value, 'to')} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           
           {showGasFeeInput ? (
              <Input 
                 type="text" 
                 value={gasFeeInput} 
-                onChange={(e) => handleGasFeeInputChange(e.target.value)} 
-                onBlur={handleGasFeeBlur}
+                onChange={(e) => handleGasFeeInputChange(e.target.value)}
                 placeholder="Enter gas fee (USD)" 
                 className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" 
              />
