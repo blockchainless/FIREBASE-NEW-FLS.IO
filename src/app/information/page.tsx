@@ -10,12 +10,12 @@ export default function InformationPage() {
 
     return (
         <div className="w-full max-w-sm mx-auto animate-fade-in">
-            <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue flex flex-col max-h-[85vh]">
+            <Card className="bg-black/50 backdrop-blur-sm border-2 border-primary shadow-neon-blue">
                 <CardHeader>
                     <CardTitle className="text-3xl text-center font-headline">Information</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow p-0 flex flex-col min-h-0">
-                    <div className="flex-grow border-2 border-primary/50 rounded-md mx-6 my-2">
+                <CardContent>
+                    <div className="h-[550px] border-2 border-primary/50 rounded-md">
                         <ScrollArea className="h-full no-scrollbar">
                             <div className="p-6 text-foreground/90">
                                 {/* Content will be added here later */}
