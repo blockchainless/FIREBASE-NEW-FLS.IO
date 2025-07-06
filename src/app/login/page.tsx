@@ -42,7 +42,7 @@ export default function LoginPage() {
                         Login
                     </Button>
                     <Button variant="outline" onClick={() => router.push('/')} className="w-full h-12">
-                        Back to Home
+                        Back to Setup
                     </Button>
                 </div>
             </form>

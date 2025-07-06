@@ -14,7 +14,7 @@ export default function ArbitragePage() {
   const router = useRouter();
 
   const handleLogout = () => {
-    router.push('/');
+    router.push('/login');
   };
 
   return (

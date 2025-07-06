@@ -1,45 +1,144 @@
-import { Button } from "@/components/ui/button";
-import { History, Wallet } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-export default function WelcomePage() {
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { FormEvent, useState } from 'react';
+import { AuthLayout } from '@/components/shared/auth-layout';
+import { Lock, KeyRound } from 'lucide-react';
+import Link from 'next/link';
+
+export default function SetPasswordPage() {
+  const router = useRouter();
+  
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pin, setPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (password.length < 20 || password.length > 50) {
+      setError("Password must be between 20 and 50 characters long.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (!/^\d{10,20}$/.test(pin)) {
+      setError("PIN must be between 10 and 20 digits.");
+      return;
+    }
+    if (pin !== confirmPin) {
+      setError("PIN codes do not match.");
+      return;
+    }
+    
+    // In a real app, you'd save the password and pin securely
+    router.push(`/welcome`);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center space-y-8">
-      <div className="text-center space-y-4 animate-fade-in-down">
-        <h1 className="text-5xl md:text-6xl font-bold font-headline">
-          Demo
-        </h1>
-        <p className="text-muted-foreground max-w-sm mx-auto">
-          Select restore if you had wallet before to access it. Select create wallet if you need to open new wallet to use this dapp.
-        </p>
-      </div>
-      <div className="w-full max-w-sm space-y-6 animate-fade-in-up">
-        <Link href="/set-password?action=restore" passHref>
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-16 text-lg border-2 border-primary hover:bg-primary/10 hover:text-foreground transition-all duration-300 hover:shadow-neon-red"
-          >
-            <History className="mr-3 h-6 w-6" />
-            Restore Wallet
-          </Button>
-        </Link>
-        <Link href="/set-password?action=create" passHref>
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-16 text-lg border-2 border-primary hover:bg-primary/10 hover:text-foreground transition-all duration-300 hover:shadow-neon-red"
-          >
-            <Wallet className="mr-3 h-6 w-6" />
-            Create Wallet
-          </Button>
-        </Link>
-      </div>
-      <div className="animate-fade-in-up">
-        <p className="text-xs text-muted-foreground text-center">
-          Blockchain Dapp, Powered by web3, 2025 All right reserved.
-        </p>
-      </div>
+    <div className="flex justify-center">
+        <AuthLayout title="Set Security">
+          <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                  <Label htmlFor="password">Choose a secure password (20-50 characters)</Label>
+                  <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input 
+                          id="password" 
+                          type="password" 
+                          placeholder="••••••••••••••••••••" 
+                          required 
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10 h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
+                          minLength={20}
+                          maxLength={50}
+                      />
+                  </div>
+              </div>
+              <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm password</Label>
+                  <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input 
+                          id="confirm-password" 
+                          type="password" 
+                          placeholder="••••••••••••••••••••" 
+                          required 
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="pl-10 h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
+                          minLength={20}
+                          maxLength={50}
+                      />
+                  </div>
+              </div>
+              
+              <div className="space-y-2">
+                  <Label htmlFor="pin">Set a 10-20 digit PIN</Label>
+                  <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input 
+                          id="pin" 
+                          type="password"
+                          inputMode="numeric"
+                          pattern="\d*"
+                          minLength={10}
+                          maxLength={20}
+                          placeholder="••••••••••" 
+                          required 
+                          value={pin}
+                          onChange={(e) => setPin(e.target.value)}
+                          className="pl-10 h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
+                      />
+                  </div>
+              </div>
+              
+              <div className="space-y-2">
+                  <Label htmlFor="confirm-pin">Confirm PIN</Label>
+                  <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input 
+                          id="confirm-pin" 
+                          type="password"
+                          inputMode="numeric"
+                          pattern="\d*"
+                          minLength={10}
+                          maxLength={20}
+                          placeholder="••••••••••" 
+                          required 
+                          value={confirmPin}
+                          onChange={(e) => setConfirmPin(e.target.value)}
+                          className="pl-10 h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
+                      />
+                  </div>
+              </div>
+              
+              {error && <p className="text-sm text-destructive text-center">{error}</p>}
+              
+               <div className="flex flex-col space-y-2 pt-4">
+                  <Button 
+                      type="submit" 
+                      className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red"
+                  >
+                      Save & Continue
+                  </Button>
+                  <Link href="/login" passHref>
+                    <Button type="button" variant="outline" className="w-full h-12">
+                        Login to Existing Wallet
+                    </Button>
+                  </Link>
+              </div>
+          </form>
+        </AuthLayout>
     </div>
   );
 }

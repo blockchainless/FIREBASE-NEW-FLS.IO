@@ -62,7 +62,7 @@ function SetupPageContent() {
             >
               I've saved my phrase, Continue
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.back()} className="w-full h-12">
+            <Button type="button" variant="outline" onClick={() => router.push('/welcome')} className="w-full h-12">
               Back
             </Button>
           </div>
@@ -104,7 +104,7 @@ function SetupPageContent() {
             >
               Continue
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.back()} className="w-full h-12">
+            <Button type="button" variant="outline" onClick={() => router.push('/welcome')} className="w-full h-12">
               Back
             </Button>
           </div>
@@ -116,9 +116,9 @@ function SetupPageContent() {
   return (
     <AuthLayout title="Setup Wallet">
       <div className="text-center space-y-4">
-        <p>Please select an action from the home page.</p>
-          <Link href="/" passHref>
-              <Button variant="outline">Go to Home</Button>
+        <p>Please select an action from the welcome page.</p>
+          <Link href="/welcome" passHref>
+              <Button variant="outline">Go to Welcome</Button>
           </Link>
       </div>
     </AuthLayout>
