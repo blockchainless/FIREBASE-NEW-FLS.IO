@@ -25,7 +25,7 @@ export default function ArbitragePage() {
 
   const initial_state = {
     network: 'ethereum',
-    lender: 'balancer-v2',
+    lender: 'aave-v3',
     fromSwap: 'uniswap',
     toSwap: 'sushiswap',
     fromCoin: 'USDT',
@@ -63,9 +63,10 @@ export default function ArbitragePage() {
   };
 
   const lenderFees = {
-    'balancer-v2': 0, 'balancer-v3': 0, 'balancer': 0, 
-    'aave-ark': 0.0005, 'aave-v2': 0.0009, 'aave-v3': 0.0005,
-    'uniswap-v1': 0.003, 'uniswap-v2': 0.003, 'uniswap-v3': 0.003, 'uniswap-v4': 0.003,
+    'aave-v3': 0.0005,
+    'uniswap-v3': 0.003,
+    'balancer-v3': 0,
+    'bancor-v3': 0.001,
   };
 
   const dexFees = {
@@ -160,9 +161,9 @@ export default function ArbitragePage() {
   const handleGasFeeInputChange = (value) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
     setGasFeeInput(controlledValue);
+    
     const gasFee = parseFloat(controlledValue) || 0;
-
-    if (showGasFeeInput && gasFee > 0 && fromCoin && toCoin && fromSwap && toSwap && lender) {
+    if (gasFee > 0 && fromCoin && toCoin && fromSwap && toSwap && lender) {
       const fromCoinPrice = coinPrices[fromCoin] || 1;
       const toCoinPrice = coinPrices[toCoin] || 1;
       const priceToCoinOnFromSwap = toCoinPrice * (dexPriceFactors[fromSwap] || 1);
@@ -173,13 +174,13 @@ export default function ArbitragePage() {
 
       const grossProfitRate = (priceToCoinOnToSwap / priceToCoinOnFromSwap) * (1 - fromSwapFee) * (1 - toSwapFee) - 1;
       const effectiveProfitRate = grossProfitRate - currentLenderFeeRate;
-
+      
       if (effectiveProfitRate > 0) {
-        const requiredPrincipal = (gasFee + 1) / effectiveProfitRate; // Target $1 profit
+        const requiredPrincipal = gasFee / effectiveProfitRate;
         const requiredFromAmount = requiredPrincipal / fromCoinPrice;
         
         setFromAmount(requiredFromAmount.toFixed(2));
-        const toAmountValue = (requiredFromAmount * coinPrices[fromCoin]) / coinPrices[toCoin];
+        const toAmountValue = (requiredFromAmount * fromCoinPrice) / toCoinPrice;
         setToAmount(toAmountValue.toFixed(6));
       } else {
         setFromAmount('');
@@ -190,7 +191,7 @@ export default function ArbitragePage() {
       setToAmount('');
     }
   };
-
+  
   const resetForm = () => {
       setNetwork(initial_state.network);
       setLender(initial_state.lender);
@@ -222,11 +223,10 @@ export default function ArbitragePage() {
       { value: 'base', label: 'Base' }, { value: 'solana', label: 'Solana' },
   ];
   const lenderOptions = [
-      { value: 'balancer-v2', label: 'Balancer V2' }, { value: 'balancer-v3', label: 'Balancer V3' },
-      { value: 'balancer', label: 'Balancer' }, { value: 'aave-ark', label: 'Aave ARK' },
-      { value: 'aave-v2', label: 'Aave V2' }, { value: 'aave-v3', label: 'Aave V3' },
-      { value: 'uniswap-v1', label: 'Uniswap V1' }, { value: 'uniswap-v2', label: 'Uniswap V2' },
-      { value: 'uniswap-v3', label: 'Uniswap V3' }, { value: 'uniswap-v4', label: 'Uniswap V4' },
+      { value: 'aave-v3', label: 'Aave V3' },
+      { value: 'uniswap-v3', label: 'Uniswap V3' },
+      { value: 'balancer-v3', label: 'Balancer V3' },
+      { value: 'bancor-v3', label: 'Bancor V3' },
   ];
   const fromSwapOptions = [
       { value: 'uniswap', label: 'Uniswap' }, { value: 'sushiswap', label: 'Sushiswap' },
