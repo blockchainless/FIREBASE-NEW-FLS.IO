@@ -20,16 +20,16 @@ export default function SetPasswordPage() {
     e.preventDefault();
     setError('');
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
+    if (password.length < 20 || password.length > 50) {
+      setError("Password must be between 20 and 50 characters long.");
       return;
     }
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-    if (!/^\d{4,6}$/.test(pin)) {
-      setError("PIN must be between 4 and 6 digits.");
+    if (!/^\d{10,20}$/.test(pin)) {
+      setError("PIN must be between 10 and 20 digits.");
       return;
     }
     if (pin !== confirmPin) {
@@ -46,17 +46,19 @@ export default function SetPasswordPage() {
         <AuthLayout title="Set Security">
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                    <Label htmlFor="password">Choose a secure password</Label>
+                    <Label htmlFor="password">Choose a secure password (20-50 characters)</Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input 
                             id="password" 
                             type="password" 
-                            placeholder="••••••••" 
+                            placeholder="••••••••••••••••••••" 
                             required 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="pl-10 h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
+                            minLength={20}
+                            maxLength={50}
                         />
                     </div>
                 </div>
@@ -67,17 +69,19 @@ export default function SetPasswordPage() {
                         <Input 
                             id="confirm-password" 
                             type="password" 
-                            placeholder="••••••••" 
+                            placeholder="••••••••••••••••••••" 
                             required 
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             className="pl-10 h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
+                            minLength={20}
+                            maxLength={50}
                         />
                     </div>
                 </div>
                 
                 <div className="space-y-2">
-                    <Label htmlFor="pin">Set a 4-6 digit PIN</Label>
+                    <Label htmlFor="pin">Set a 10-20 digit PIN</Label>
                     <div className="relative">
                         <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input 
@@ -85,8 +89,9 @@ export default function SetPasswordPage() {
                             type="password"
                             inputMode="numeric"
                             pattern="\d*"
-                            maxLength={6}
-                            placeholder="••••" 
+                            minLength={10}
+                            maxLength={20}
+                            placeholder="••••••••••" 
                             required 
                             value={pin}
                             onChange={(e) => setPin(e.target.value)}
@@ -104,8 +109,9 @@ export default function SetPasswordPage() {
                             type="password"
                             inputMode="numeric"
                             pattern="\d*"
-                            maxLength={6}
-                            placeholder="••••" 
+                            minLength={10}
+                            maxLength={20}
+                            placeholder="••••••••••" 
                             required 
                             value={confirmPin}
                             onChange={(e) => setConfirmPin(e.target.value)}
