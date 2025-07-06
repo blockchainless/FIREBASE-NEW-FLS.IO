@@ -113,7 +113,7 @@ export default function ArbitragePage() {
   const [fromSwap, setFromSwap] = useState(initial_state.fromSwap);
   const [toSwap, setToSwap] = useState(initial_state.toSwap);
   const [fromCoin, setFromCoin] = useState(initial_state.fromCoin);
-  const [toCoin, setToCoin] = useState(initial_state.toCoin);
+  const [toCoin, setToCoinState] = useState(initial_state.toCoin);
   const [fromAmount, setFromAmount] = useState(initial_state.fromAmount);
   const [toAmount, setToAmount] = useState(initial_state.toAmount);
   const [gasFeeInput, setGasFeeInput] = useState(initial_state.gasFeeInput);
@@ -121,7 +121,7 @@ export default function ArbitragePage() {
   const [estimatedProfit, setEstimatedProfit] = useState('0.00');
   const [executeClicked, setExecuteClicked] = useState(false);
 
-  const handleRecalculate = useCallback((source: 'from' | 'to' | 'gas' | 'init', value: string) => {
+  const handleRecalculate = useCallback((source: 'from' | 'to' | 'gas', value: string) => {
     const controlledValue = value.replace(/[^0-9.]/g, '');
 
     const selectedLender = protocolData[lender];
@@ -173,13 +173,12 @@ export default function ArbitragePage() {
       const breakevenGas = grossProfitUSD - lenderFeeUSD;
       
       setToAmount(amountOfToCoin.toFixed(6));
-      if (breakevenGas > 0) {
-        setGasFeeInput(breakevenGas.toFixed(2));
-        setEstimatedProfit('0.00');
-      } else {
-        setGasFeeInput('0.00');
-        setEstimatedProfit(breakevenGas.toFixed(2));
-      }
+      setGasFeeInput(breakevenGas > 0 ? breakevenGas.toFixed(2) : '0.00');
+      
+      const finalGasFee = breakevenGas > 0 ? breakevenGas : 0;
+      const netProfit = grossProfitUSD - lenderFeeUSD - finalGasFee;
+      setEstimatedProfit(netProfit.toFixed(2));
+
     } else if (source === 'to') {
       setToAmount(controlledValue);
       const receivedAmount = parseFloat(controlledValue);
@@ -201,13 +200,12 @@ export default function ArbitragePage() {
       const breakevenGas = grossProfitUSD - lenderFeeUSD;
       
       setFromAmount(principal.toFixed(2));
-      if (breakevenGas > 0) {
-        setGasFeeInput(breakevenGas.toFixed(2));
-        setEstimatedProfit('0.00');
-      } else {
-        setGasFeeInput('0.00');
-        setEstimatedProfit(breakevenGas.toFixed(2));
-      }
+      setGasFeeInput(breakevenGas > 0 ? breakevenGas.toFixed(2) : '0.00');
+
+      const finalGasFee = breakevenGas > 0 ? breakevenGas : 0;
+      const netProfit = grossProfitUSD - lenderFeeUSD - finalGasFee;
+      setEstimatedProfit(netProfit.toFixed(2));
+
     } else if (source === 'gas') {
       setGasFeeInput(controlledValue);
       const gasFee = parseFloat(controlledValue);
@@ -224,8 +222,9 @@ export default function ArbitragePage() {
 
       if (effectiveProfitRate > 0) {
         const requiredPrincipal = (gasFee / priceFromCoin_Lender) / effectiveProfitRate;
-        setFromAmount(requiredPrincipal.toFixed(2));
         const toAmountValue = (requiredPrincipal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
+        
+        setFromAmount(requiredPrincipal.toFixed(2));
         setToAmount(toAmountValue.toFixed(6));
 
         const amountOfToCoinAfterFee = toAmountValue * (1 - fromSwapFee);
@@ -260,7 +259,7 @@ export default function ArbitragePage() {
       setFromSwap(initial_state.fromSwap);
       setToSwap(initial_state.toSwap);
       setFromCoin(initial_state.fromCoin);
-      setToCoin(initial_state.toCoin);
+      setToCoinState(initial_state.toCoin);
       setFromAmount(initial_state.fromAmount);
       setToAmount(initial_state.toAmount);
       setGasFeeInput(initial_state.gasFeeInput);
@@ -307,7 +306,7 @@ export default function ArbitragePage() {
           <ArbitrageSelect value={fromSwap} onValueChange={setFromSwap} options={fromDexOptions} placeholder="Arbitrage From Swap" />
           <ArbitrageSelect value={toSwap} onValueChange={setToSwap} options={toDexOptions} placeholder="Arbitrage To Swap" />
           <ArbitrageSelect value={fromCoin} onValueChange={setFromCoin} options={coinOptions} placeholder="Arbitrage Coin From" />
-          <ArbitrageSelect value={toCoin} onValueChange={setToCoin} options={coinOptions} placeholder="Arbitrage Coin To" />
+          <ArbitrageSelect value={toCoin} onValueChange={setToCoinState} options={coinOptions} placeholder="Arbitrage Coin To" />
 
           <Input type="text" value={fromAmount} onChange={(e) => handleRecalculate('from', e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           <Input type="text" value={toAmount} onChange={(e) => handleRecalculate('to', e.target.value)} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
@@ -344,3 +343,5 @@ export default function ArbitragePage() {
     </div>
   );
 }
+
+    
