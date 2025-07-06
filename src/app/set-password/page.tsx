@@ -4,25 +4,25 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lock } from 'lucide-react';
 import { FormEvent } from 'react';
 import { AuthLayout } from '@/components/shared/auth-layout';
+import { Lock } from 'lucide-react';
 
-export default function LoginPage() {
+export default function SetPasswordPage() {
   const router = useRouter();
 
-  const handleLogin = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd verify the password
-    router.push('/arbitrage');
+    // In a real app, you'd save the wallet and password securely
+    router.push('/login');
   };
 
   return (
     <div className="flex justify-center">
-        <AuthLayout title="Login">
-            <form onSubmit={handleLogin} className="space-y-6">
+        <AuthLayout title="Set Password">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Choose a secure password</Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input 
@@ -34,15 +34,15 @@ export default function LoginPage() {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col space-y-2">
+                 <div className="flex flex-col space-y-2">
                     <Button 
                         type="submit" 
                         className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red"
                     >
-                        Login
+                        Finish Setup
                     </Button>
-                    <Button variant="outline" onClick={() => router.push('/')} className="w-full h-12">
-                        Back to Home
+                    <Button type="button" variant="outline" onClick={() => router.back()} className="w-full h-12">
+                        Back
                     </Button>
                 </div>
             </form>

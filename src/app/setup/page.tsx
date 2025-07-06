@@ -33,8 +33,8 @@ function SetupPageContent() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd validate the seed phrase, save it securely, and hash the password.
-    router.push('/login');
+    // In a real app, you'd validate the seed phrase and pass it to the next step
+    router.push('/set-password');
   };
 
   if (action === 'create') {
@@ -54,23 +54,18 @@ function SetupPageContent() {
               )) : Array.from({ length: 24 }).map((_, index) => <Skeleton key={index} className="h-5 w-full" />)}
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Set a Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
-            />
+          <div className="flex flex-col space-y-2">
+            <Button
+              type="submit"
+              disabled={!seedPhrase}
+              className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red"
+            >
+              I've saved my phrase, Continue
+            </Button>
+            <Link href="/" passHref className="w-full">
+              <Button variant="outline" className="w-full h-12">Back</Button>
+            </Link>
           </div>
-          <Button
-            type="submit"
-            disabled={!seedPhrase}
-            className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red"
-          >
-            I've saved my phrase, Finish
-          </Button>
         </form>
       </AuthLayout>
     );
@@ -102,22 +97,17 @@ function SetupPageContent() {
               ))}
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Set a Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors"
-            />
+          <div className="flex flex-col space-y-2">
+            <Button
+              type="submit"
+              className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red"
+            >
+              Continue
+            </Button>
+            <Link href="/" passHref className="w-full">
+              <Button variant="outline" className="w-full h-12">Back</Button>
+            </Link>
           </div>
-          <Button
-            type="submit"
-            className="w-full h-14 text-lg font-bold transition-all duration-300 hover:shadow-neon-red"
-          >
-            Restore Wallet
-          </Button>
         </form>
       </AuthLayout>
     );
