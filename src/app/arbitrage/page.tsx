@@ -22,74 +22,26 @@ const ArbitrageSelect = ({ value, onValueChange, options, placeholder }) => (
 
 // --- LENDER DATA ---
 const protocolData = {
-  'aave-v3': {
-    name: "Aave V3",
-    fee: 0.0005,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2563, "WETH": 2641, "BTC": 100500, "WBTC": 103515 }
-  },
-  'balancer-v3': {
-    name: "Balancer V3",
-    fee: 0.001,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2576, "WETH": 2653, "BTC": 101000, "WBTC": 104030 }
-  },
-  'uniswap-v3': {
-    name: "Uniswap V3",
-    fee: 0.0015,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2588, "WETH": 2666, "BTC": 101500, "WBTC": 104545 }
-  },
-  'bancor-v3': {
-    name: "Bancor V3",
-    fee: 0.0,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2601, "WETH": 2679, "BTC": 102000, "WBTC": 105060 }
-  }
+  'aave-v3': { name: "Aave V3", fee: 0.0005, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2563, "WETH": 2641, "BTC": 100500, "WBTC": 103515 } },
+  'balancer-v3': { name: "Balancer V3", fee: 0.001, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2576, "WETH": 2653, "BTC": 101000, "WBTC": 104030 } },
+  'uniswap-v3': { name: "Uniswap V3", fee: 0.0015, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2588, "WETH": 2666, "BTC": 101500, "WBTC": 104545 } },
+  'bancor-v3': { name: "Bancor V3", fee: 0.0, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2601, "WETH": 2679, "BTC": 102000, "WBTC": 105060 } }
 };
 
 // --- DEX DATA (Buy Low) ---
 const fromDexData = {
-  'uniswap-v3': {
-    name: "Uniswap V3",
-    fee: 0.0065,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550, "WETH": 2630, "BTC": 100000, "WBTC": 103000 }
-  },
-  'sushiswap': {
-    name: "Sushiswap",
-    fee: 0.008,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2570, "WETH": 2650, "BTC": 100020, "WBTC": 103020 }
-  },
-  'kyberswap': {
-    name: "Kyberswap",
-    fee: 0.006,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2590, "WETH": 2670, "BTC": 100040, "WBTC": 103040 }
-  },
-  'pancakeswap': {
-    name: "Pancakeswap",
-    fee: 0.0075,
-    tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2610, "WETH": 2690, "BTC": 100060, "WBTC": 103060 }
-  }
+  'uniswap-v3': { name: "Uniswap V3", fee: 0.0065, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550, "WETH": 2630, "BTC": 100000, "WBTC": 103000 } },
+  'sushiswap': { name: "Sushiswap", fee: 0.008, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2570, "WETH": 2650, "BTC": 100020, "WBTC": 103020 } },
+  'kyberswap': { name: "Kyberswap", fee: 0.006, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2590, "WETH": 2670, "BTC": 100040, "WBTC": 103040 } },
+  'pancakeswap': { name: "Pancakeswap", fee: 0.0075, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2610, "WETH": 2690, "BTC": 100060, "WBTC": 103060 } }
 };
 
 // --- DEX DATA (Sell High) ---
 const toDexData = {
-    'apeswap': {
-      name: "ApeSwap",
-      fee: 0.007,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 3978, "WETH": 4098, "BTC": 156000, "WBTC": 160680 }
-    },
-    '1inch': {
-      name: "1inch",
-      fee: 0.0085,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4009, "WETH": 4130, "BTC": 156031, "WBTC": 160713 }
-    },
-    '0x-protocol': {
-      name: "0x Protocol",
-      fee: 0.0065,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4040, "WETH": 4161, "BTC": 156062, "WBTC": 160744 }
-    },
-    'quickswap': {
-      name: "Quickswap",
-      fee: 0.008,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4072, "WETH": 4194, "BTC": 156094, "WBTC": 160776 }
-    }
+    'apeswap': { name: "ApeSwap", fee: 0.007, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 3978, "WETH": 4098, "BTC": 156000, "WBTC": 160680 } },
+    '1inch': { name: "1inch", fee: 0.0085, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4009, "WETH": 4130, "BTC": 156031, "WBTC": 160713 } },
+    '0x-protocol': { name: "0x Protocol", fee: 0.0065, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4040, "WETH": 4161, "BTC": 156062, "WBTC": 160744 } },
+    'quickswap': { name: "Quickswap", fee: 0.008, tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4072, "WETH": 4194, "BTC": 156094, "WBTC": 160776 } }
 };
 // --------------------------------
 
@@ -128,7 +80,8 @@ export default function ArbitragePage() {
     const selectedToSwap = toDexData[toSwap];
 
     if (!lastEdited || !fromCoin || !toCoin || !selectedLender || !selectedFromSwap || !selectedToSwap) {
-      return;
+        setEstimatedProfit('0.00');
+        return;
     }
 
     const priceFromCoin_Lender = selectedLender.tokens[fromCoin];
@@ -138,88 +91,80 @@ export default function ArbitragePage() {
     const priceToCoin_ToSwap = selectedToSwap.tokens[toCoin];
 
     if (!priceFromCoin_Lender || !priceFromCoin_FromSwap || !priceToCoin_FromSwap || !priceFromCoin_ToSwap || !priceToCoin_ToSwap) {
+        setFromAmount('');
+        setToAmount('');
+        setGasFeeInput('');
         setEstimatedProfit('0.00');
         return;
     }
-
+    
     const lenderFeeRate = selectedLender.fee;
     const fromSwapFee = selectedFromSwap.fee;
     const toSwapFee = selectedToSwap.fee;
     
-    let principal = parseFloat(fromAmount);
-    let received = parseFloat(toAmount);
-    let gas = parseFloat(gasFeeInput);
-    let netProfit = 0;
-
-    const calculateProfit = (p, g) => {
-        if (isNaN(p) || p <= 0) return 0;
-        if (isNaN(g)) g = 0;
-
-        const amountOfToCoin = (p * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
-        const amountOfToCoinAfterFee = amountOfToCoin * (1 - fromSwapFee);
-        const endValueUSD = amountOfToCoinAfterFee * priceToCoin_ToSwap;
+    // --- Pure Calculation Functions ---
+    const getToAmount = (from: number) => (from * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
+    const getFromAmount = (to: number) => (to * priceToCoin_FromSwap) / priceFromCoin_FromSwap;
+    
+    const getProfit = (from: number, gas: number) => {
+        if (!from || from <= 0) return 0;
+        const principalValueUSD = from * priceFromCoin_Lender;
+        const amountOfToCoin = getToAmount(from) * (1 - fromSwapFee);
+        const endValueUSD = amountOfToCoin * priceToCoin_ToSwap;
         const endAmountOfFromCoin = endValueUSD / priceFromCoin_ToSwap;
-        const endAmountOfFromCoinAfterFee = endAmountOfFromCoin * (1 - toSwapFee);
-        const grossProfitInFromCoin = endAmountOfFromCoinAfterFee - p;
+        const finalAmount = endAmountOfFromCoin * (1 - toSwapFee);
+        const grossProfitInFromCoin = finalAmount - from;
         const grossProfitUSD = grossProfitInFromCoin * priceFromCoin_Lender;
-        const principalValueUSD = p * priceFromCoin_Lender;
         const lenderFeeUSD = principalValueUSD * lenderFeeRate;
-        
-        return grossProfitUSD - lenderFeeUSD - g;
+        return grossProfitUSD - lenderFeeUSD - (gas || 0);
     };
 
-    switch (lastEdited) {
-        case 'from':
-            if (!isNaN(principal) && principal > 0) {
-                const calculatedTo = (principal * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
-                if (toAmount !== calculatedTo.toFixed(6)) {
-                    setToAmount(calculatedTo.toFixed(6));
-                }
-                netProfit = calculateProfit(principal, gas || 0);
-            } else {
-                setToAmount('');
-                netProfit = 0;
-            }
-            break;
+    const getBreakEvenGas = (from: number) => getProfit(from, 0);
 
-        case 'to':
-            if (!isNaN(received) && received > 0) {
-                const calculatedFrom = (received * priceToCoin_FromSwap) / priceFromCoin_FromSwap;
-                if (fromAmount !== calculatedFrom.toFixed(2)) {
-                    setFromAmount(calculatedFrom.toFixed(2));
-                }
-                netProfit = calculateProfit(calculatedFrom, gas || 0);
-            } else {
-                setFromAmount('');
-                netProfit = 0;
-            }
-            break;
-            
-        case 'gas':
-            const rate = ((priceFromCoin_FromSwap / priceToCoin_FromSwap) * (1 - fromSwapFee) * priceToCoin_ToSwap / priceFromCoin_ToSwap * (1 - toSwapFee));
-            const profitFactor = priceFromCoin_Lender * ((rate - 1) - lenderFeeRate);
-            
-            if (profitFactor > 0 && !isNaN(gas) && gas > 0) {
-                const calculatedFrom = gas / profitFactor;
-                const calculatedTo = (calculatedFrom * priceFromCoin_FromSwap) / priceToCoin_FromSwap;
-                
-                if (fromAmount !== calculatedFrom.toFixed(2)) {
-                    setFromAmount(calculatedFrom.toFixed(2));
-                }
-                if (toAmount !== calculatedTo.toFixed(6)) {
-                    setToAmount(calculatedTo.toFixed(6));
-                }
-                netProfit = 0; // At break-even point, profit is 0
-            } else {
-                // Not profitable or gas is invalid, just recalc profit with current amounts
-                netProfit = calculateProfit(principal, gas || 0);
-            }
-            break;
+    const getBreakEvenFrom = (gas: number) => {
+        const rate = (priceFromCoin_FromSwap / priceToCoin_FromSwap) * (1 - fromSwapFee) * priceToCoin_ToSwap / priceFromCoin_ToSwap * (1 - toSwapFee);
+        const profitFactor = priceFromCoin_Lender * ((rate - 1) - lenderFeeRate);
+        if (profitFactor <= 0 || !gas || gas <= 0) return NaN;
+        return gas / profitFactor;
+    };
+
+    // --- State Update Logic ---
+    const fromNum = parseFloat(fromAmount);
+    const toNum = parseFloat(toAmount);
+    const gasNum = parseFloat(gasFeeInput);
+
+    let finalFrom = fromNum, finalTo = toNum, finalGas = gasNum, finalProfit = 0;
+
+    if (lastEdited === 'from' && fromNum > 0) {
+        finalTo = getToAmount(fromNum);
+        finalGas = getBreakEvenGas(fromNum);
+        finalProfit = getProfit(fromNum, gasNum || 0);
+    } else if (lastEdited === 'to' && toNum > 0) {
+        finalFrom = getFromAmount(toNum);
+        finalGas = getBreakEvenGas(finalFrom);
+        finalProfit = getProfit(finalFrom, gasNum || 0);
+    } else if (lastEdited === 'gas' && gasNum > 0) {
+        finalFrom = getBreakEvenFrom(gasNum);
+        if (finalFrom > 0) {
+            finalTo = getToAmount(finalFrom);
+            finalProfit = 0; // By definition of break-even
+        } else {
+            finalProfit = getProfit(fromNum || 0, gasNum);
+        }
+    } else if (fromNum > 0) {
+        // Default calculation when a dropdown changes, based on fromAmount
+        finalTo = getToAmount(fromNum);
+        finalGas = getBreakEvenGas(fromNum);
+        finalProfit = getProfit(fromNum, gasNum || 0);
     }
 
-    if(estimatedProfit !== netProfit.toFixed(2)) {
-        setEstimatedProfit(netProfit.toFixed(2));
-    }
+    const formatOrEmpty = (val, precision) => (val > 0 ? val.toFixed(precision) : '');
+
+    // Update state, avoiding feedback loops by checking against current values
+    if (fromAmount !== formatOrEmpty(finalFrom, 2)) setFromAmount(formatOrEmpty(finalFrom, 2));
+    if (toAmount !== formatOrEmpty(finalTo, 6)) setToAmount(formatOrEmpty(finalTo, 6));
+    if (gasFeeInput !== formatOrEmpty(finalGas, 2)) setGasFeeInput(formatOrEmpty(finalGas, 2));
+    if (estimatedProfit !== finalProfit.toFixed(2)) setEstimatedProfit(finalProfit.toFixed(2));
 
   }, [lender, fromSwap, toSwap, fromCoin, toCoin, fromAmount, toAmount, gasFeeInput, lastEdited, network]);
 
@@ -236,7 +181,16 @@ export default function ArbitragePage() {
     }
   };
 
+  const handleSelectChange = (setter, value) => {
+      setter(value);
+      // After any dropdown change, re-trigger calculations based on the 'from' amount as the source of truth.
+      if (fromAmount) {
+          setLastEdited('from');
+      }
+  }
+
   const resetForm = () => {
+      setLastEdited(null);
       setNetwork(initial_state.network);
       setLender(initial_state.lender);
       setFromSwap(initial_state.fromSwap);
@@ -248,7 +202,6 @@ export default function ArbitragePage() {
       setGasFeeInput(initial_state.gasFeeInput);
       setEstimatedProfit('0.00');
       setExecuteClicked(false);
-      setLastEdited(null);
   }
 
   const handleExecute = () => {
@@ -277,6 +230,12 @@ export default function ArbitragePage() {
       { value: 'ETH', label: 'ETH' }, { value: 'WETH', label: 'WETH' },
       { value: 'WBTC', label: 'WBTC' }, { value: 'BTC', label: 'BTC' },
   ];
+  
+  const setToCoin = (value: string) => {
+    setToCoinState(value);
+    setLastEdited('from'); 
+  };
+
 
   return (
     <div className="w-full max-w-sm mx-auto animate-fade-in">
@@ -285,12 +244,12 @@ export default function ArbitragePage() {
           <CardTitle className="text-3xl font-headline">flashloanstudio.io</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <ArbitrageSelect value={network} onValueChange={(value) => { setNetwork(value); setLastEdited('from'); }} options={networkOptions} placeholder="Select Network Provider" />
-          <ArbitrageSelect value={lender} onValueChange={(value) => { setLender(value); setLastEdited('from'); }} options={lenderOptions} placeholder="Select Borrow Lender" />
-          <ArbitrageSelect value={fromSwap} onValueChange={(value) => { setFromSwap(value); setLastEdited('from'); }} options={fromDexOptions} placeholder="Arbitrage From Swap" />
-          <ArbitrageSelect value={toSwap} onValueChange={(value) => { setToSwap(value); setLastEdited('from'); }} options={toDexOptions} placeholder="Arbitrage To Swap" />
-          <ArbitrageSelect value={fromCoin} onValueChange={(value) => { setFromCoin(value); setLastEdited('from'); }} options={coinOptions} placeholder="Arbitrage Coin From" />
-          <ArbitrageSelect value={toCoin} onValueChange={(value) => { setToCoinState(value); setLastEdited('from'); }} options={coinOptions} placeholder="Arbitrage Coin To" />
+          <ArbitrageSelect value={network} onValueChange={(v) => handleSelectChange(setNetwork, v)} options={networkOptions} placeholder="Select Network Provider" />
+          <ArbitrageSelect value={lender} onValueChange={(v) => handleSelectChange(setLender, v)} options={lenderOptions} placeholder="Select Borrow Lender" />
+          <ArbitrageSelect value={fromSwap} onValueChange={(v) => handleSelectChange(setFromSwap, v)} options={fromDexOptions} placeholder="Arbitrage From Swap" />
+          <ArbitrageSelect value={toSwap} onValueChange={(v) => handleSelectChange(setToSwap, v)} options={toDexOptions} placeholder="Arbitrage To Swap" />
+          <ArbitrageSelect value={fromCoin} onValueChange={(v) => handleSelectChange(setFromCoin, v)} options={coinOptions} placeholder="Arbitrage Coin From" />
+          <ArbitrageSelect value={toCoin} onValueChange={(v) => handleSelectChange(setToCoinState, v)} options={coinOptions} placeholder="Arbitrage Coin To" />
 
           <Input type="text" value={fromAmount} onChange={(e) => handleInputChange('from', e.target.value)} placeholder="Enter amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
           <Input type="text" value={toAmount} onChange={(e) => handleInputChange('to', e.target.value)} placeholder="Calculated amount" className="h-12 text-lg bg-black/30 focus:bg-black/50 transition-colors text-center" />
