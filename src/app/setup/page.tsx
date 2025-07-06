@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -9,6 +10,7 @@ import { AuthLayout } from '@/components/shared/auth-layout';
 import * as bip39 from 'bip39';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { wordlist } from '@/lib/bip39-wordlist';
 
 function SetupPageContent() {
   const router = useRouter();
@@ -20,7 +22,7 @@ function SetupPageContent() {
 
   useEffect(() => {
     if (action === 'create') {
-      const mnemonic = bip39.generateMnemonic(256); // 24 words
+      const mnemonic = bip39.generateMnemonic(256, undefined, wordlist); // 24 words
       setSeedPhrase(mnemonic);
     }
   }, [action]);
