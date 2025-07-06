@@ -18,8 +18,6 @@ export default function InformationPage() {
                     <ScrollArea className="h-full no-scrollbar">
                         <div className="p-6 pt-0 text-foreground/90">
                             <div className="space-y-4">
-                                <h2 className="text-xl font-bold text-center">FlashLoanStudio.io - DeFi Arbitrage Platform</h2>
-                                
                                 <div>
                                     <p className="font-bold mt-4">What is FlashLoanStudio.io?</p>
                                     <p>FlashLoanStudio.io is an advanced decentralized finance (DeFi) arbitrage trading platform designed to empower users to capitalize on price discrepancies across various decentralized exchanges (DEXs). By leveraging cutting-edge automation, FlashLoanStudio.io identifies and executes profitable arbitrage opportunities seamlessly, making it accessible for both novice and experienced traders to maximize their returns in the dynamic world of DeFi.</p>
