@@ -47,7 +47,7 @@ function SetPasswordPageContent() {
 
   return (
     <AuthLayout title="Set Security">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 py-10">
           <div className="space-y-2">
               <Label htmlFor="password">Choose a secure password (20-50 characters)</Label>
               <div className="relative">
