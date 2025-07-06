@@ -69,27 +69,26 @@ const fromDexData = {
 };
 
 // --- DEX DATA (Sell High) ---
-// Prices are slightly higher to simulate arbitrage opportunity
 const toDexData = {
-    'uniswap-v3': {
-      name: "Uniswap",
+    'apeswap': {
+      name: "ApeSwap",
       fee: 0.007,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4017, "WETH": 4138, "BTC": 157560, "WBTC": 162286 }
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 3978, "WETH": 4098, "BTC": 156000, "WBTC": 160680 }
     },
-    'sushiswap': {
-      name: "Sushiswap",
+    '1inch': {
+      name: "1inch",
       fee: 0.0085,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4049, "WETH": 4171, "BTC": 157591, "WBTC": 162320 }
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4009, "WETH": 4130, "BTC": 156031, "WBTC": 160713 }
     },
-    'kyberswap': {
-      name: "Kyberswap",
+    '0x-protocol': {
+      name: "0x Protocol",
       fee: 0.0065,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4080, "WETH": 4202, "BTC": 157622, "WBTC": 162351 }
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4040, "WETH": 4161, "BTC": 156062, "WBTC": 160744 }
     },
-    'pancakeswap': {
-      name: "Pancakeswap",
+    'quickswap': {
+      name: "Quickswap",
       fee: 0.008,
-      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4112, "WETH": 4235, "BTC": 157654, "WBTC": 162383 }
+      tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 4072, "WETH": 4194, "BTC": 156094, "WBTC": 160776 }
     }
 };
 // --------------------------------
@@ -101,7 +100,7 @@ export default function ArbitragePage() {
     network: 'ethereum',
     lender: 'aave-v3',
     fromSwap: 'uniswap-v3',
-    toSwap: 'sushiswap',
+    toSwap: '1inch',
     fromCoin: 'USDT',
     toCoin: 'WETH',
     fromAmount: '',
@@ -288,7 +287,9 @@ export default function ArbitragePage() {
   ];
   const lenderOptions = Object.entries(protocolData).map(([key, { name }]) => ({ value: key, label: name }));
 
-  const dexOptions = Object.entries(fromDexData).map(([key, { name }]) => ({ value: key, label: name }));
+  const fromDexOptions = Object.entries(fromDexData).map(([key, { name }]) => ({ value: key, label: name }));
+  const toDexOptions = Object.entries(toDexData).map(([key, { name }]) => ({ value: key, label: name }));
+
 
   const coinOptions = [
       { value: 'USDT', label: 'USDT' }, { value: 'USDC', label: 'USDC' },
@@ -305,8 +306,8 @@ export default function ArbitragePage() {
         <CardContent className="space-y-3">
           <ArbitrageSelect value={network} onValueChange={setNetwork} options={networkOptions} placeholder="Select Network Provider" />
           <ArbitrageSelect value={lender} onValueChange={setLender} options={lenderOptions} placeholder="Select Borrow Lender" />
-          <ArbitrageSelect value={fromSwap} onValueChange={setFromSwap} options={dexOptions} placeholder="Arbitrage From Swap" />
-          <ArbitrageSelect value={toSwap} onValueChange={setToSwap} options={dexOptions} placeholder="Arbitrage To Swap" />
+          <ArbitrageSelect value={fromSwap} onValueChange={setFromSwap} options={fromDexOptions} placeholder="Arbitrage From Swap" />
+          <ArbitrageSelect value={toSwap} onValueChange={setToSwap} options={toDexOptions} placeholder="Arbitrage To Swap" />
           <ArbitrageSelect value={fromCoin} onValueChange={(value) => { setFromCoin(value); handleAmountChange(fromAmount); }} options={coinOptions} placeholder="Arbitrage Coin From" />
           <ArbitrageSelect value={toCoin} onValueChange={(value) => { setToCoin(value); handleAmountChange(fromAmount); }} options={coinOptions} placeholder="Arbitrage Coin To" />
 
@@ -349,5 +350,3 @@ export default function ArbitragePage() {
     </div>
   );
 }
-
-    
