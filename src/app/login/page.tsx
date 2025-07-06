@@ -20,7 +20,7 @@ export default function LoginPage() {
   return (
     <div className="flex justify-center">
         <AuthLayout title="Login">
-            <form onSubmit={handleLogin} className="space-y-6 py-40">
+            <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
                     <div className="relative">

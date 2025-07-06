@@ -12,7 +12,7 @@ export default function WelcomePage() {
   return (
     <div className="flex justify-center">
       <AuthLayout title="flashloanstudio.io">
-        <div className="space-y-6 py-12 text-center">
+        <div className="space-y-6 text-center">
           <p className="text-muted-foreground max-w-sm mx-auto">
             Select restore if you had wallet before to access it. Select create
             wallet if you need to open new wallet to use this dapp.
