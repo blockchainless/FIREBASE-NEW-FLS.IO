@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
@@ -13,34 +14,54 @@ export default function InformationPage() {
                 <CardHeader>
                     <CardTitle className="text-3xl text-center font-headline">Information</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow overflow-y-auto no-scrollbar space-y-4 text-foreground/90">
-                    <div>
-                        <p className="font-bold text-lg">What is flashloanstudio.io?</p>
-                        <p>flashloanstudio.io is a decentralized arbitrage trading platform that helps you profit from price differences across different decentralized exchanges (DEXs). Our platform automates the process of finding and executing profitable arbitrage opportunities.</p>
-                    </div>
-                    <div>
-                        <p className="font-bold text-lg">How it works:</p>
-                        <ul className="list-disc list-inside space-y-1 pl-4">
-                            <li><strong>Network Selection:</strong> Choose your preferred blockchain network (Ethereum, Arbitrum, Polygon, etc.)</li>
-                            <li><strong>Borrowing Protocol:</strong> Select a lending protocol to borrow funds for larger arbitrage opportunities</li>
-                            <li><strong>DEX Selection:</strong> Pick two exchanges where you want to execute the arbitrage trade</li>
-                            <li><strong>Token Pair:</strong> Choose which cryptocurrencies you want to arbitrage between</li>
-                            <li><strong>Amount Entry:</strong> Enter how much you want to trade, or set your gas budget first</li>
-                            <li><strong>Profit Calculation:</strong> The platform automatically calculates potential profits minus gas fees</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p className="font-bold text-lg">Smart Gas Fee System:</p>
-                        <p>Our platform features an intelligent gas fee calculator that works two ways:</p>
-                        <ul className="list-disc list-inside space-y-1 pl-4">
-                            <li>Enter your trade amounts first → See calculated gas fees</li>
-                            <li>Set your gas budget first → Get suggested trade amounts that fit your budget</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p className="font-bold text-lg">Risk Warning:</p>
-                        <p>Arbitrage trading involves financial risk. Always do your own research and never invest more than you can afford to lose. Gas fees and market volatility can affect profitability.</p>
-                    </div>
+                <CardContent className="flex-grow overflow-hidden text-foreground/90">
+                    <ScrollArea className="h-full no-scrollbar pr-2">
+                        <div className="space-y-4">
+                            <h2 className="text-xl font-bold text-center">FlashLoanStudio.io - DeFi Arbitrage Platform</h2>
+                            
+                            <div>
+                                <p className="font-bold mt-4">What is FlashLoanStudio.io?</p>
+                                <p>FlashLoanStudio.io is an advanced decentralized finance (DeFi) arbitrage trading platform designed to empower users to capitalize on price discrepancies across various decentralized exchanges (DEXs). By leveraging cutting-edge automation, FlashLoanStudio.io identifies and executes profitable arbitrage opportunities seamlessly, making it accessible for both novice and experienced traders to maximize their returns in the dynamic world of DeFi.</p>
+                            </div>
+                            
+                            <div>
+                                <p className="font-bold mt-4">How FlashLoanStudio.io Works:</p>
+                                <p>FlashLoanStudio.io streamlines the arbitrage process through a user-friendly interface and robust backend technology. Below is a detailed breakdown of the steps involved in using the platform:</p>
+                                <ul className="list-disc list-inside space-y-2 mt-2 pl-4">
+                                    <li><strong>Network Selection:</strong> Choose from a variety of supported blockchain networks, including Ethereum, Arbitrum, Polygon, Binance Smart Chain, and more, to execute your trades on the network that best suits your strategy.</li>
+                                    <li><strong>Borrowing Protocol:</strong> Select a trusted lending protocol to access flash loans, enabling you to borrow funds instantly without collateral to amplify your arbitrage opportunities and potential profits.</li>
+                                    <li><strong>DEX Selection:</strong> Pick two decentralized exchanges (e.g., Uniswap, SushiSwap, or PancakeSwap) where price differences for your chosen token pair exist, allowing the platform to execute trades across these venues.</li>
+                                    <li><strong>Token Pair:</strong> Specify the cryptocurrency pair (e.g., ETH/USDT, DAI/USDC) you wish to arbitrage, tailoring your trades to market opportunities and your investment preferences.</li>
+                                    <li><strong>Amount Entry:</strong> Input the desired trade amount or set a gas budget to ensure your trades align with your financial goals and risk tolerance.</li>
+                                    <li><strong>Profit Calculation:</strong> FlashLoanStudio.io’s sophisticated algorithm automatically calculates potential profits by factoring in price differences, gas fees, and other transaction costs, providing you with a clear estimate of your expected returns.</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <p className="font-bold mt-4">Smart Gas Fee System:</p>
+                                <p>FlashLoanStudio.io features an innovative gas fee optimization system designed to maximize profitability while accommodating user preferences. The system operates in two flexible modes:</p>
+                                <ul className="list-disc list-inside space-y-2 mt-2 pl-4">
+                                    <li><strong>Trade-First Mode:</strong> Enter your desired trade amounts, and the platform will calculate the associated gas fees, ensuring transparency and helping you understand the cost implications of your trades.</li>
+                                    <li><strong>Budget-First Mode:</strong> Set a gas budget upfront, and FlashLoanStudio.io will recommend optimal trade amounts that fit within your specified budget, allowing you to control costs while pursuing profitable opportunities.</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <p className="font-bold mt-4">Risk Warning:</p>
+                                <p>While FlashLoanStudio.io provides powerful tools for arbitrage trading, it’s important to recognize that all DeFi activities carry inherent financial risks. Market volatility, gas fee fluctuations, and smart contract vulnerabilities can impact profitability. We strongly recommend conducting thorough research, understanding the risks involved, and only investing funds you can afford to lose. Always exercise caution and due diligence when engaging in arbitrage trading.</p>
+                            </div>
+                            
+                            <div>
+                                <p className="font-bold mt-4">Why Choose FlashLoanStudio.io?</p>
+                                <p>FlashLoanStudio.io stands out as a premier DeFi arbitrage platform due to its intuitive design, robust automation, and commitment to user empowerment. Whether you’re looking to execute small-scale trades or leverage flash loans for larger opportunities, our platform provides the tools and insights you need to succeed in the fast-paced world of decentralized finance.</p>
+                            </div>
+                            
+                            <div>
+                                <p className="font-bold mt-4">Contact Us:</p>
+                                <p>If you have any questions, feedback, or need assistance, you can reach out to the FlashLoanStudio.io development team by sending an email to <a href="mailto:flashloanstudio@arbitrage.io" className="text-primary hover:underline">flashloanstudio@arbitrage.io</a>. We’re here to help you navigate the platform and make the most of your DeFi arbitrage experience.</p>
+                            </div>
+                        </div>
+                    </ScrollArea>
                 </CardContent>
                 <CardFooter>
                     <Button onClick={() => router.push('/arbitrage')} className="w-full h-12 text-lg font-bold">
