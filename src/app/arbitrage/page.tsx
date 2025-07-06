@@ -46,7 +46,7 @@ const protocolData = {
 
 const dexData = {
   'uniswap-v3': {
-    name: "Uniswap V3",
+    name: "Uniswap",
     fee: 0.0065,
     tokens: { "USDC": 1.00, "USDT": 1.00, "ETH": 2550, "WETH": 2630, "BTC": 100000, "WBTC": 103000 }
   },
@@ -267,7 +267,7 @@ export default function ArbitragePage() {
       { value: 'bancor-v3', label: 'Bancor V3' },
   ];
   const dexOptions = [
-      { value: 'uniswap-v3', label: 'Uniswap V3' }, { value: 'sushiswap', label: 'Sushiswap' },
+      { value: 'uniswap-v3', label: 'Uniswap' }, { value: 'sushiswap', label: 'Sushiswap' },
       { value: 'kyberswap', label: 'Kyberswap' }, { value: 'pancakeswap', label: 'Pancakeswap' },
   ];
   const coinOptions = [
